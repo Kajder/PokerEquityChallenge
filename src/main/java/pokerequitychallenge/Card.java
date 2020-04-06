@@ -1,31 +1,26 @@
 package pokerequitychallenge;
 
-public class Card {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-    private CardType cardType;
-    private CardColor cardColor;
-    private short value;
+@Getter
+@AllArgsConstructor
+public class Card implements Comparable<Card> {
 
-    public Card(CardType cardType, CardColor cardColor) {
-        this.cardType = cardType;
-        this.cardColor = cardColor;
-        this.value = CardValueSetter.assignValue(cardType);
-    }
+    private final CardType cardType;
+    private final CardColor cardColor;
 
-    public CardType getCardType() {
-        return cardType;
-    }
-
-    CardColor getCardColor() {
-        return cardColor;
-    }
-
-    short getValue() {
-        return value;
+    public short getValue() {
+        return this.cardType.value;
     }
 
     @Override
     public String toString() {
-        return cardType.toString() + "-" + cardColor.toString();
+        return cardType.toString() + " - " + cardColor.toString();
+    }
+
+    @Override
+    public int compareTo(Card o) {
+        return o.getCardType().value - this.getCardType().value;
     }
 }

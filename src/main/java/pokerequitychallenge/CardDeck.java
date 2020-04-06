@@ -1,29 +1,24 @@
 package pokerequitychallenge;
 
+import lombok.Getter;
+
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
+@Getter
 public class CardDeck {
-    private List<CardType> cardTypes;
-    private List<CardColor> cardColors;
-    private Set<Card> deck = new HashSet<>();
+    private static List<Card> deck = new LinkedList<>();
 
-    public CardDeck() {
-        cardTypes = Arrays.asList(CardType.class.getEnumConstants());
-        cardColors = Arrays.asList(CardColor.class.getEnumConstants());
-        for (CardType cardType : cardTypes) {
-            for (CardColor cardColor : cardColors) {
-                deck.add(new Card(cardType, cardColor));
-            }
-        }
-
-
-        System.out.println(Arrays.asList(HandType.class.getEnumConstants()));
+    static {
+        Arrays.asList(CardType.class.getEnumConstants()).forEach(cardType ->
+                Arrays.asList(CardColor.class.getEnumConstants()).forEach(cardColor ->
+                        deck.add(new Card(cardType, cardColor))));
     }
 
-    public Set<Card> getDeck() {
+    public static List<Card> shuffleDeck() {
+        Collections.shuffle(deck);
         return deck;
     }
 }

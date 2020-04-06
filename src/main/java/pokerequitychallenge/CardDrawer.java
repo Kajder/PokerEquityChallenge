@@ -1,68 +1,46 @@
 package pokerequitychallenge;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import lombok.Getter;
+import pokerequitychallenge.Exception.FlopSizeExceeded;
+import pokerequitychallenge.Exception.NotEnoughCardsInDeck;
+
+import java.util.LinkedList;
 import java.util.List;
 
+@Getter
 public class CardDrawer {
 
-    CardDeck cardDeck;
     List<Card> currentDeck;
 
-
     public CardDrawer() {
-        this.cardDeck = new CardDeck();
-        this.currentDeck = drawCurrentDeck();
+        this.currentDeck = CardDeck.shuffleDeck();
     }
 
-    private List<Card> drawCurrentDeck() {
-        List<Card> currentDeck = new ArrayList<>();
-        for (Card card : cardDeck.getDeck()) {
-            currentDeck.add(card);
-        }
-        Collections.shuffle(currentDeck);
-        return currentDeck;
+    private List<Card> drawCards(int n) {
+        if (n > 3) throw new FlopSizeExceeded();
+        if (currentDeck.size() < n) throw new NotEnoughCardsInDeck();
+
+        List<Card> cards = new LinkedList<>();
+        for (int i = 0; i < n; i++) cards.add(this.currentDeck.get(i));
+        currentDeck.removeAll(cards);
+        return cards;
     }
 
     public List<Card> drawFlop() {
-        List<Card> flop = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            flop.add(this.currentDeck.get(0));
-            currentDeck.remove(0);
-        }
-
-        return flop;
+        return drawCards(3);
     }
 
     public List<Card> drawTurn(List<Card> flop) {
-        List<Card> turn = new ArrayList<>();
-        turn.addAll(flop);
-        turn.add(this.currentDeck.get(0));
-        currentDeck.remove(0);
-
-        return turn;
+        flop.addAll(drawCards(1));
+        return flop;
     }
 
     public List<Card> drawRiver(List<Card> turn) {
-        List<Card> river = new ArrayList<>();
-        river.addAll(turn);
-        river.add(this.currentDeck.get(0));
-        currentDeck.remove(0);
-
-        return river;
+        turn.addAll(drawCards(1));
+        return turn;
     }
 
     public List<Card> drawTwoIndividualCards() {
-        List<Card> hand = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            hand.add(this.currentDeck.get(0));
-            currentDeck.remove(0);
-        }
-
-        return hand;
-    }
-
-    public List<Card> getCurrentDeck() {
-        return currentDeck;
+        return drawCards(2);
     }
 }

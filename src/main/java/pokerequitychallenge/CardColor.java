@@ -1,5 +1,5 @@
 package pokerequitychallenge;
 
 public enum CardColor {
-    SPADE, HEART, DIAMOND, CLUB;
+    SPADE, HEART, DIAMOND, CLUB
 }

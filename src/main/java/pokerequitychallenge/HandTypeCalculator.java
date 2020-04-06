@@ -1,34 +1,32 @@
 package pokerequitychallenge;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import lombok.Getter;
+
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+@Getter
 public class HandTypeCalculator {
-    private HandType handType;
-    private List<Card> handCards;
-    private List<Card> sortedHandCards;
-    private Map<CardType, Integer> cardTypesCountersMap;
-    private boolean isRoyalFlush;
-    private boolean isFlush;
-    private boolean isStraight;
-    private boolean isFourOfKind;
-    private boolean isThreeOfKind;
-    private boolean isFullHouse;
-    private Integer numberOfPairs;
+    private static List<Card> handCards;
+    private static List<Card> sortedHandCards;
+    private static Map<CardType, Integer> cardTypesCountersMap;
+    private static boolean isRoyalFlush;
+    private static boolean isFlush;
+    private static boolean isStraight;
+    private static boolean isFourOfKind;
+    private static boolean isThreeOfKind;
+    private static boolean isFullHouse;
+    private static Integer numberOfPairs;
 
+    static HandType calculateHandType(List<Card> cards) {
+        //TODO sprawdzenie liczby kart
+        resetClassVariables();
+        handCards = cards;
+        sortedHandCards = handCards.stream().sorted().collect(Collectors.toList());
 
-    public HandTypeCalculator(List<Card> handCards) {
-        this.handCards = handCards;
-        this.sortedHandCards = sortCardsByValue();
-        this.handType = calculateHandType();
-    }
-
-    public HandType calculateHandType() {
         isFlush = isFlush();
         isStraight = isStraight();
         isRoyalFlush = isRoyalFlush();
@@ -60,8 +58,19 @@ public class HandTypeCalculator {
         return HandType.HIGH_CARD;
     }
 
-    private void checkForCardTypesMultiplications() {
-        this.cardTypesCountersMap = new HashMap<>();
+    private static void resetClassVariables() {
+        cardTypesCountersMap = null;
+        isRoyalFlush = false;
+        isFlush = false;
+        isStraight = false;
+        isFourOfKind = false;
+        isThreeOfKind = false;
+        isFullHouse = false;
+        numberOfPairs = null;
+    }
+
+    private static void checkForCardTypesMultiplications() {
+        cardTypesCountersMap = new HashMap<>();
         CardType[] cardTypes = CardType.class.getEnumConstants();
 
         Integer currentCount = 0;
@@ -75,19 +84,19 @@ public class HandTypeCalculator {
         }
     }
 
-    private boolean isFullHouse() {
+    private static boolean isFullHouse() {
         return cardTypesCountersMap.containsValue(3) && cardTypesCountersMap.containsValue(2);
     }
 
-    private boolean isFourOfKind() {
+    private static boolean isFourOfKind() {
         return cardTypesCountersMap.containsValue(4);
     }
 
-    private boolean isThreeOfKind() {
+    private static boolean isThreeOfKind() {
         return cardTypesCountersMap.containsValue(3);
     }
 
-    private Integer calculateNumberOfPairs() {
+    private static Integer calculateNumberOfPairs() {
         Integer pairsCounter = 0;
         Collection<Integer> mapValues = cardTypesCountersMap.values();
         for (Integer value : mapValues) {
@@ -96,16 +105,13 @@ public class HandTypeCalculator {
         return pairsCounter;
     }
 
-    private boolean isRoyalFlush() {
-        if (isFlush && isStraight
+    private static boolean isRoyalFlush() {
+        return isFlush && isStraight
                 && sortedHandCards.get(0).getCardType().equals(CardType.A)
-                && sortedHandCards.get(1).getCardType().equals(CardType.K)) {
-            return true;
-        }
-        return false;
+                && sortedHandCards.get(1).getCardType().equals(CardType.K);
     }
 
-    private boolean isFlush() {
+    private static boolean isFlush() {
         CardColor cardColor = sortedHandCards.get(0).getCardColor();
         for (int i = 1; i < sortedHandCards.size(); i++) {
             if (!sortedHandCards.get(i).getCardColor().equals(cardColor)) {
@@ -115,7 +121,7 @@ public class HandTypeCalculator {
         return true;
     }
 
-    private boolean isStraight() {
+    private static boolean isStraight() {
         //is it Straight from Ace
         if (sortedHandCards.get(0).getCardType().equals(CardType.A)
                 && sortedHandCards.get(1).getCardType().equals(CardType.FIVE)
@@ -130,72 +136,5 @@ public class HandTypeCalculator {
             if (sortedHandCards.get(i).getValue() != (maxCardValue - i)) return false;
         }
         return true;
-    }
-
-    private List<Card> sortCardsByValue() {
-        List<Card> sortedHandCards = new ArrayList<>();
-        List<Card> handCards = new ArrayList<>();
-        handCards.addAll(this.handCards);
-
-        while (handCards.size() != 0) {
-            short maxCardValue = 0;
-
-            for (Card card : handCards) {
-                if (card.getValue() > maxCardValue) {
-                    maxCardValue = card.getValue();
-                }
-            }
-
-            Iterator<Card> iter = handCards.iterator();
-            while (iter.hasNext()) {
-                Card card = iter.next();
-                if (card.getValue() == maxCardValue) {
-                    sortedHandCards.add(card);
-                    iter.remove();
-                }
-            }
-        }
-        //System.out.println(sortedHandCards);
-        return sortedHandCards;
-    }
-
-    public List<Card> getSortedHandCards() {
-        return sortedHandCards;
-    }
-
-    public HandType getHandType() {
-        return handType;
-    }
-
-    public Map<CardType, Integer> getCardTypesCountersMap() {
-        return cardTypesCountersMap;
-    }
-
-    public boolean getIsRoyalFlush() {
-        return isRoyalFlush;
-    }
-
-    public boolean getIsFlush() {
-        return isFlush;
-    }
-
-    public boolean getIsStraight() {
-        return isStraight;
-    }
-
-    public boolean getIsFourOfKind() {
-        return isFourOfKind;
-    }
-
-    public boolean getIsThreeOfKind() {
-        return isThreeOfKind;
-    }
-
-    public boolean getIsFullHouse() {
-        return isFullHouse;
-    }
-
-    public Integer getNumberOfPairs() {
-        return numberOfPairs;
     }
 }
