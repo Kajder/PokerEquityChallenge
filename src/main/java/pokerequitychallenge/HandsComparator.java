@@ -86,9 +86,9 @@ public class HandsComparator {
                 isThereAnyStraightNotStartingFromAce(handsWith_StraightFlushesList)) {
             hands = handsWith_StraightFlushesList
                     .stream()
-                    .filter(hand -> !(hand.getHandTypeCalculator().getSortedHandCards().get(0).getCardType().equals(CardType.A)
+                    .filter(hand -> !(hand.getHandCardsSorted().get(0).getCardType().equals(CardType.A)
                             &&
-                            hand.getHandTypeCalculator().getSortedHandCards().get(1).getCardType().equals(CardType.FIVE)))
+                            hand.getHandCardsSorted().get(1).getCardType().equals(CardType.FIVE)))
                     .collect(Collectors.toList());
         }
         short maxCardValue = findGivenMaxCardValueFromHands(hands, 0);
@@ -101,17 +101,17 @@ public class HandsComparator {
     private static boolean isThereAnyStraightStartingFromAce(List<Hand> handsWith_Straights) {
         return handsWith_Straights
                 .stream()
-                .anyMatch(hand -> (hand.getHandTypeCalculator().getSortedHandCards().get(0).getCardType().equals(CardType.A)
+                .anyMatch(hand -> (hand.getHandCardsSorted().get(0).getCardType().equals(CardType.A)
                         &&
-                        hand.getHandTypeCalculator().getSortedHandCards().get(1).getCardType().equals(CardType.FIVE)));
+                        hand.getHandCardsSorted().get(1).getCardType().equals(CardType.FIVE)));
     }
 
     private static boolean isThereAnyStraightNotStartingFromAce(List<Hand> handsWith_Straights) {
         return handsWith_Straights
                 .stream()
-                .anyMatch(hand -> !(hand.getHandTypeCalculator().getSortedHandCards().get(0).getCardType().equals(CardType.A)
+                .anyMatch(hand -> !(hand.getHandCardsSorted().get(0).getCardType().equals(CardType.A)
                         &&
-                        hand.getHandTypeCalculator().getSortedHandCards().get(1).getCardType().equals(CardType.FIVE)));
+                        hand.getHandCardsSorted().get(1).getCardType().equals(CardType.FIVE)));
     }
     //endregion
 
@@ -147,17 +147,18 @@ public class HandsComparator {
 
         for (Hand hand : handsWith_FourOfKindsList) {
             definedCard = findDefinedCardWithinFourOfKinds(hand, unique);
-            if (definedCard.getValue() > maxValueOfDefinedCards) maxValueOfDefinedCards = definedCard.getValue();
+            if (definedCard.getValue() > maxValueOfDefinedCards)
+                maxValueOfDefinedCards = definedCard.getValue();
         }
         return maxValueOfDefinedCards;
     }
 
     public static Card findDefinedCardWithinFourOfKinds(Hand hand, boolean unique) {
-        boolean firstEqualThird = hand.getHandTypeCalculator().getSortedHandCards().get(0).getCardType().equals(hand.getHandTypeCalculator().getSortedHandCards().get(2).getCardType());
+        boolean firstEqualThird = hand.getHandCardsSorted().get(0).getCardType().equals(hand.getHandCardsSorted().get(2).getCardType());
         if (unique == firstEqualThird) {
-            return hand.getHandTypeCalculator().getSortedHandCards().get(4);
+            return hand.getHandCardsSorted().get(4);
         } else {
-            return hand.getHandTypeCalculator().getSortedHandCards().get(0);
+            return hand.getHandCardsSorted().get(0);
         }
     }
     //endregion
@@ -178,7 +179,7 @@ public class HandsComparator {
         for (Hand handWithAThree : handsWith_FullHousesList) {
             firstCardOfHandValue = handWithAThree.getCardValue(0);
             ;
-            thirdCardOfHandValue = handWithAThree.getHandTypeCalculator().getSortedHandCards().get(2).getValue();
+            thirdCardOfHandValue = handWithAThree.getHandCardsSorted().get(2).getValue();
             if (firstCardOfHandValue.equals(thirdCardOfHandValue)) {
                 if (firstCardOfHandValue.equals(highestThreeValue))
                     fullHouseHandsWithGivenThreeValue.add(handWithAThree);
@@ -257,7 +258,7 @@ public class HandsComparator {
         for (int i = 0; i < 4; i++) {
             maxCardValue = findGivenMaxCardValueFromHands(handsWith_FlushesList, i);
             for (int j = 0; j < handsWith_FlushesList.size(); j++) {
-                if (handsWith_FlushesList.get(j).getHandTypeCalculator().getSortedHandCards().get(i).getValue()
+                if (handsWith_FlushesList.get(j).getHandCardsSorted().get(i).getValue()
                         != maxCardValue) {
                     handsWith_FlushesList.remove(j);
                     if (handsWith_FlushesList.size() == 1) {
@@ -273,7 +274,7 @@ public class HandsComparator {
     private static short findGivenMaxCardValueFromHands(List<Hand> hands, int i) {
         short max = hands
                 .stream()
-                .map(hand -> hand.getHandTypeCalculator().getSortedHandCards().get(i).getValue())
+                .map(hand -> hand.getHandCardsSorted().get(i).getValue())
                 .max(Comparator.comparing(Integer::valueOf))
                 .get();
         return max;
@@ -523,7 +524,7 @@ public class HandsComparator {
     private static short findHighestCardValueDifferentThanGivenValues(List<Hand> hands, Set<Short> values) {
         Set<Short> allCardValues = new HashSet<>();
         for (Hand hand : hands) {
-            allCardValues.addAll(hand.getHandCards().stream().map(Card::getValue).collect(Collectors.toSet()));
+            allCardValues.addAll(hand.getHandCards().stream().map(c -> c.getValue()).collect(Collectors.toSet()));
         }
         allCardValues.removeAll(values);
         return Collections.max(allCardValues);

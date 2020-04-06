@@ -1,18 +1,22 @@
 package pokerequitychallenge;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Getter
 public class Hand {
     private int playerId;
     private HandType handType;
     private List<Card> handCards;
-    private HandTypeCalculator handTypeCalculator;
+    private List<Card> handCardsSorted;
 
-    Hand(List<Card> handCards) {
+    public Hand(List<Card> handCards) {
         this.handCards = handCards;
-        this.handTypeCalculator = new HandTypeCalculator(this.handCards);
-        this.handType = handTypeCalculator.getHandType();
+        this.handType = HandTypeCalculator.calculateHandType(handCards);
+        this.handCardsSorted = handCards.stream().sorted().collect(Collectors.toList());
     }
 
     public Hand(CardType type_1, CardColor color_1,
@@ -27,39 +31,24 @@ public class Hand {
         handCards.add(new Card(type_4, color_4));
         handCards.add(new Card(type_5, color_5));
         this.handCards = handCards;
-        this.handTypeCalculator = new HandTypeCalculator(this.handCards);
-        this.handType = handTypeCalculator.getHandType();
-
-
+        this.handType = HandTypeCalculator.calculateHandType(handCards);
+        this.handCardsSorted = handCards.stream().sorted().collect(Collectors.toList());
     }
 
     public Hand(List<Card> handCards, int playerId) {
         this.handCards = handCards;
-        HandTypeCalculator handTypeCalculator = new HandTypeCalculator(handCards);
-        this.handType = handTypeCalculator.getHandType();
+        this.handType = HandTypeCalculator.calculateHandType(handCards);
+        this.handCardsSorted = handCards.stream().sorted().collect(Collectors.toList());
         this.playerId = playerId;
     }
 
-    public void printHand(){
+    public void printHand() {
         System.out.println("//// Hand " + this.hashCode());
         handCards.forEach(card -> System.out.println(card.toString()));
         System.out.println("////");
     }
 
-    HandType getHandType() {
-        return handType;
+    short getCardValue(int sortedCardIndex) {
+        return handCardsSorted.get(sortedCardIndex).getValue();
     }
-
-    HandTypeCalculator getHandTypeCalculator() {
-        return handTypeCalculator;
-    }
-
-    List<Card> getHandCards() {
-        return handCards;
-    }
-
-    short getCardValue(int sortedCardIndex){
-        return handTypeCalculator.getSortedHandCards().get(sortedCardIndex).getValue();
-    }
-
 }
