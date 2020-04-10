@@ -89,15 +89,17 @@ public class HandsComparatorTest {
     //////////////////////////////FINDING WINNERS///////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     //region Any Hand Type
+
+    private static Hand hand1 = new Hand(TEN, CLUB, J, CLUB, K, CLUB, Q, HEART, SIX, CLUB);
+    private static Hand hand2 = new Hand(TEN, CLUB, J, CLUB, K, CLUB, SEVEN, SPADE, TEN, DIAMOND);
     @Test
     public void findWinnersFrom_AnyHands_Test() {
         handsList.clear();
-        handsList.add(straightFlushHand_1);
-        handsList.add(straightFlushHand_2);
-        handsList.add(threeOfKindHand_1);
+        handsList.add(hand1);
+        handsList.add(hand2);
 
         outcomeHandsList.clear();
-        outcomeHandsList.add(straightFlushHand_2);
+        outcomeHandsList.add(hand2);
 
         assertEquals(HandsComparator.getWinningHands(handsList), outcomeHandsList);
     }
@@ -488,9 +490,7 @@ public class HandsComparatorTest {
         outcomeHandsList.add(threeOfKindHand_4);
         outcomeHandsList.add(threeOfKindHand_4);
 
-        handsList.forEach(Hand::printHand);
         System.out.println("won");
-        outcomeHandsList.forEach(Hand::printHand);
         assertEquals(HandsComparator.findWinnersFrom_ThreeOfKinds(handsList), outcomeHandsList);
     }
 
@@ -503,8 +503,6 @@ public class HandsComparatorTest {
         outcomeHandsList.clear();
         outcomeHandsList.add(threeOfKindHand_2);
 
-        handsList.forEach(Hand::printHand);
-        outcomeHandsList.forEach(Hand::printHand);
         assertEquals(HandsComparator.findWinnersFrom_ThreeOfKinds(handsList), outcomeHandsList);
     }
     //endregion

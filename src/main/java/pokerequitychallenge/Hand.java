@@ -3,18 +3,21 @@ package pokerequitychallenge;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
-public class Hand {
+public class Hand implements Comparable<Hand> {
+
     private int playerId;
     private HandType handType;
     private List<Card> handCards;
     private List<Card> handCardsSorted;
 
     public Hand(List<Card> handCards) {
-        this.handCards = handCards;
+        this.handCards = new LinkedList<>(handCards);
         this.handType = HandTypeCalculator.calculateHandType(handCards);
         this.handCardsSorted = handCards.stream().sorted().collect(Collectors.toList());
     }
@@ -35,20 +38,21 @@ public class Hand {
         this.handCardsSorted = handCards.stream().sorted().collect(Collectors.toList());
     }
 
-    public Hand(List<Card> handCards, int playerId) {
-        this.handCards = handCards;
-        this.handType = HandTypeCalculator.calculateHandType(handCards);
-        this.handCardsSorted = handCards.stream().sorted().collect(Collectors.toList());
-        this.playerId = playerId;
-    }
-
-    public void printHand() {
-        System.out.println("//// Hand " + this.hashCode());
-        handCards.forEach(card -> System.out.println(card.toString()));
-        System.out.println("////");
-    }
-
     short getCardValue(int sortedCardIndex) {
         return handCardsSorted.get(sortedCardIndex).getValue();
+    }
+
+    @Override
+    public int compareTo(Hand o) {
+        return this.getHandType().ordinal() - o.getHandType().ordinal();
+    }
+
+    @Override
+    public String toString() {
+        return handType.toString() + ": " + handCards.stream().map(Objects::toString).collect(Collectors.joining(", "));
+    }
+
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
     }
 }

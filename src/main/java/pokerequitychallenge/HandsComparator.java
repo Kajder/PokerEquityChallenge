@@ -1,5 +1,8 @@
 package pokerequitychallenge;
 
+import pokerequitychallenge.Exception.CardNotFound;
+import pokerequitychallenge.Exception.HandNotFound;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -11,34 +14,25 @@ import java.util.stream.Collectors;
 
 public class HandsComparator {
 
-
     public static List<Hand> getWinningHands(List<Hand> handsList) {
         List<Hand> handsWithHighestHandTypesList = getHandsWithHighestHandTypeList(handsList);
-        return handsWithHighestHandTypesList.size() == 1 ?
-                handsWithHighestHandTypesList :
-                calculateWinningHands(handsWithHighestHandTypesList);
+        return handsWithHighestHandTypesList.size() == 1
+                ? handsWithHighestHandTypesList
+                : calculateWinningHands(handsWithHighestHandTypesList);
     }
 
     public static HandType getHighestHandType(List<Hand> handsList) {
-        List<HandType> handTypes = Arrays.asList(HandType.class.getEnumConstants());
-        HandType highestHandType = HandType.HIGH_CARD;
-        for (Hand hand : handsList) {
-            if (handTypes.indexOf(hand.getHandType()) > handTypes.indexOf(highestHandType)) {
-                highestHandType = hand.getHandType();
-            }
-        }
-        return highestHandType;
+        return handsList.stream()
+                .max(Comparator.naturalOrder())
+                .orElseThrow(HandNotFound::new)
+                .getHandType();
     }
 
     public static List<Hand> getHandsWithHighestHandTypeList(List<Hand> handsList) {
         HandType highestHandType = getHighestHandType(handsList);
-        List<Hand> handsWithHighestHandTypes = new ArrayList<>();
-        for (Hand hand : handsList) {
-            if (hand.getHandType() == highestHandType) {
-                handsWithHighestHandTypes.add(hand);
-            }
-        }
-        return handsWithHighestHandTypes;
+        return handsList.stream()
+                .filter(hand -> hand.getHandType().equals(highestHandType))
+                .collect(Collectors.toList());
     }
 
 
@@ -154,12 +148,11 @@ public class HandsComparator {
     }
 
     public static Card findDefinedCardWithinFourOfKinds(Hand hand, boolean unique) {
-        boolean firstEqualThird = hand.getHandCardsSorted().get(0).getCardType().equals(hand.getHandCardsSorted().get(2).getCardType());
-        if (unique == firstEqualThird) {
-            return hand.getHandCardsSorted().get(4);
-        } else {
-            return hand.getHandCardsSorted().get(0);
-        }
+        boolean firstEqualThird = hand.getHandCardsSorted().get(0).getCardType()
+                .equals(hand.getHandCardsSorted().get(2).getCardType());
+        return unique == firstEqualThird
+                ? hand.getHandCardsSorted().get(4)
+                : hand.getHandCardsSorted().get(0);
     }
     //endregion
 
@@ -237,7 +230,6 @@ public class HandsComparator {
 
         for (Hand handWithATwo : handsWith_FullHousesList) {
             firstCardOfHandValue = handWithATwo.getCardValue(0);
-            ;
             thirdCardOfHandValue = handWithATwo.getCardValue(2);
             fourthCardOfHandValue = handWithATwo.getCardValue(3);
             if (firstCardOfHandValue.equals(thirdCardOfHandValue)) {
@@ -272,12 +264,11 @@ public class HandsComparator {
     }
 
     private static short findGivenMaxCardValueFromHands(List<Hand> hands, int i) {
-        short max = hands
+        return hands
                 .stream()
                 .map(hand -> hand.getHandCardsSorted().get(i).getValue())
                 .max(Comparator.comparing(Integer::valueOf))
-                .get();
-        return max;
+                .orElseThrow(() -> new RuntimeException("Max card value not found"));
     }
     //endregion
 
@@ -351,7 +342,6 @@ public class HandsComparator {
                 handsWith_TwoPairs,
                 highestPairValue,
                 (short) 1);
-        handsWithHighestHigherPair.forEach(Hand::printHand);
         if (handsWithHighestHigherPair.size() == 1) {
             return handsWithHighestHigherPair;
         }
@@ -364,7 +354,6 @@ public class HandsComparator {
                 handsWithHighestHigherPair,
                 highestFromSecondaryPairsValue,
                 (short) 3);
-        handsWithHighestHigherPair.forEach(Hand::printHand);
         if (handsWithHighestLowerPair.size() == 1) {
             return handsWithHighestLowerPair;
         }
@@ -417,7 +406,7 @@ public class HandsComparator {
                             &&
                             (card.getValue() != lowerPairValue)))
                     .findFirst()
-                    .get()
+                    .orElseThrow(CardNotFound::new)
                     .getValue();
             if (singleCardValue > highestSingleCardValue) {
                 highestSingleCardValue = singleCardValue;
@@ -425,6 +414,7 @@ public class HandsComparator {
         }
         return highestSingleCardValue;
     }
+
 
     private static List<Hand> filterForTwoPairHandsWithHighestSingleCard(List<Hand> hands, short singleCardValue) {
         return hands
@@ -444,7 +434,6 @@ public class HandsComparator {
         List<Hand> handsWithHighestPair = filterForHandsWithGivenPairValue(
                 handsWith_OnePair,
                 highestPairValue);
-        handsWithHighestPair.forEach(Hand::printHand);
         if (handsWithHighestPair.size() == 1) {
             return handsWithHighestPair;
         }
@@ -511,12 +500,9 @@ public class HandsComparator {
     }
 
     private static short findPairValueWithinOnePairHand(Hand hand) {
-        short cardValue;
-        for (short i = 0; i < 5; i++) {
-            cardValue = hand.getCardValue(i);
-            if (findCountOfGivenCardValueWithinGivenHand(hand, cardValue) == 2) {
+        for (int i = 0; i < 4; i++) {
+            if ((hand.getCardValue(i) == hand.getCardValue(i + 1)))
                 return hand.getCardValue(i);
-            }
         }
         throw new RuntimeException("No pair found within One Pair hand");
     }
@@ -524,7 +510,7 @@ public class HandsComparator {
     private static short findHighestCardValueDifferentThanGivenValues(List<Hand> hands, Set<Short> values) {
         Set<Short> allCardValues = new HashSet<>();
         for (Hand hand : hands) {
-            allCardValues.addAll(hand.getHandCards().stream().map(c -> c.getValue()).collect(Collectors.toSet()));
+            allCardValues.addAll(hand.getHandCards().stream().map(Card::getValue).collect(Collectors.toSet()));
         }
         allCardValues.removeAll(values);
         return Collections.max(allCardValues);

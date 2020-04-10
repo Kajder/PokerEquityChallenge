@@ -2,7 +2,7 @@ package pokerequitychallenge;
 
 import org.junit.Test;
 
-import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -12,7 +12,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isRoyalFlush_Test() {
         //fine royal flush
-        Hand royalFlushHand = new Hand(Arrays.asList(
+        Hand royalFlushHand = new Hand(List.of(
                 new Card(CardType.A, CardColor.DIAMOND),
                 new Card(CardType.K, CardColor.DIAMOND),
                 new Card(CardType.Q, CardColor.DIAMOND),
@@ -25,7 +25,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isRoyalFlush_WrongByCardType_Test() {
         //wrong royal flush - wrong card type
-        Hand royalFlushWrongCardTypeHand = new Hand(Arrays.asList(
+        Hand royalFlushWrongCardTypeHand = new Hand(List.of(
                 new Card(CardType.A, CardColor.DIAMOND),
                 new Card(CardType.K, CardColor.DIAMOND),
                 new Card(CardType.Q, CardColor.DIAMOND),
@@ -38,7 +38,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isRoyalFlush_WrongByCardColor_Test() {
         //wrong royal flush - wrong card color
-        Hand royalFlushWrongCardColorHand = new Hand(Arrays.asList(
+        Hand royalFlushWrongCardColorHand = new Hand(List.of(
                 new Card(CardType.A, CardColor.DIAMOND),
                 new Card(CardType.K, CardColor.DIAMOND),
                 new Card(CardType.Q, CardColor.DIAMOND),
@@ -52,7 +52,7 @@ public class HandTypeCalculatorTest {
     public void isStraightFlush_Test() {
         //fine straight flush
 
-        Hand straightFlushHand = new Hand(Arrays.asList(
+        Hand straightFlushHand = new Hand(List.of(
                 new Card(CardType.SIX, CardColor.CLUB),
                 new Card(CardType.FIVE, CardColor.CLUB),
                 new Card(CardType.FOUR, CardColor.CLUB),
@@ -65,7 +65,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isStraightFlushFromAce_Test() {
         //fine straight flush from Ace to Five
-        Hand straightFlushCardsFromAceHand = new Hand(Arrays.asList(
+        Hand straightFlushCardsFromAceHand = new Hand(List.of(
                 new Card(CardType.FIVE, CardColor.CLUB),
                 new Card(CardType.FOUR, CardColor.CLUB),
                 new Card(CardType.THREE, CardColor.CLUB),
@@ -78,7 +78,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isStraightFlush_WrongByCardColor_Test() {
         //wrong straight flush by card color
-        Hand straightFlushWrongByCardColorHand = new Hand(Arrays.asList(
+        Hand straightFlushWrongByCardColorHand = new Hand(List.of(
                 new Card(CardType.SIX, CardColor.CLUB),
                 new Card(CardType.FIVE, CardColor.CLUB),
                 new Card(CardType.FOUR, CardColor.CLUB),
@@ -91,7 +91,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isStraightFlush_WrongByCardType_Test() {
         //wrong straight flush by card type
-        Hand straightFlushWrongByCardTypeHand = new Hand(Arrays.asList(
+        Hand straightFlushWrongByCardTypeHand = new Hand(List.of(
                 new Card(CardType.SIX, CardColor.CLUB),
                 new Card(CardType.FIVE, CardColor.CLUB),
                 new Card(CardType.FOUR, CardColor.CLUB),
@@ -104,7 +104,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isFourOfKind_Test() {
         //fine four of a kind
-        Hand fourOfKindHand = new Hand(Arrays.asList(
+        Hand fourOfKindHand = new Hand(List.of(
                 new Card(CardType.FIVE, CardColor.CLUB),
                 new Card(CardType.FIVE, CardColor.DIAMOND),
                 new Card(CardType.FIVE, CardColor.HEART),
@@ -117,7 +117,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isFourOfKind_Wrong_Test() {
         //wrong four of a kind
-        Hand fourOfKindWrongHand = new Hand(Arrays.asList(
+        Hand fourOfKindWrongHand = new Hand(List.of(
                 new Card(CardType.FIVE, CardColor.CLUB),
                 new Card(CardType.FIVE, CardColor.DIAMOND),
                 new Card(CardType.FIVE, CardColor.HEART),
@@ -130,7 +130,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isFullHouse_Test() {
         //fine full house
-        Hand fullHouseHand = new Hand(Arrays.asList(
+        Hand fullHouseHand = new Hand(List.of(
                 new Card(CardType.FIVE, CardColor.CLUB),
                 new Card(CardType.FIVE, CardColor.DIAMOND),
                 new Card(CardType.FIVE, CardColor.HEART),
@@ -143,7 +143,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isFullHouse_Wrong_Test() {
         //wrong full house
-        Hand fullHouseWrongHand = new Hand(Arrays.asList(
+        Hand fullHouseWrongHand = new Hand(List.of(
                 new Card(CardType.FIVE, CardColor.CLUB),
                 new Card(CardType.FIVE, CardColor.DIAMOND),
                 new Card(CardType.FIVE, CardColor.HEART),
@@ -156,7 +156,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isFlush_Test() {
         //fine flush
-        Hand flushHand = new Hand(Arrays.asList(
+        Hand flushHand = new Hand(List.of(
                 new Card(CardType.TWO, CardColor.CLUB),
                 new Card(CardType.J, CardColor.CLUB),
                 new Card(CardType.FIVE, CardColor.CLUB),
@@ -169,7 +169,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isFlush_Wrong_Test() {
         //wrong flush
-        Hand flushWrongHand = new Hand(Arrays.asList(
+        Hand flushWrongHand = new Hand(List.of(
                 new Card(CardType.TWO, CardColor.CLUB),
                 new Card(CardType.J, CardColor.CLUB),
                 new Card(CardType.FIVE, CardColor.CLUB),
@@ -182,7 +182,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isStraight_Test() {
         //fine straight
-        Hand straightHand = new Hand(Arrays.asList(
+        Hand straightHand = new Hand(List.of(
                 new Card(CardType.SIX, CardColor.CLUB),
                 new Card(CardType.NINE, CardColor.DIAMOND),
                 new Card(CardType.SEVEN, CardColor.CLUB),
@@ -195,7 +195,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isStraight_Wrong_Test() {
         //wrong straight
-        Hand straightWrongHand = new Hand(Arrays.asList(
+        Hand straightWrongHand = new Hand(List.of(
                 new Card(CardType.SIX, CardColor.CLUB),
                 new Card(CardType.NINE, CardColor.DIAMOND),
                 new Card(CardType.A, CardColor.CLUB),
@@ -208,7 +208,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isThreeOfKind_Test() {
         //fine three of a kind
-        Hand threeOfKindHand = new Hand(Arrays.asList(
+        Hand threeOfKindHand = new Hand(List.of(
                 new Card(CardType.FIVE, CardColor.CLUB),
                 new Card(CardType.FIVE, CardColor.DIAMOND),
                 new Card(CardType.FIVE, CardColor.HEART),
@@ -221,7 +221,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isThreeOfKind_Wrong_Test() {
         //wrong three of a kind
-        Hand threeOfKindWrongHand = new Hand(Arrays.asList(
+        Hand threeOfKindWrongHand = new Hand(List.of(
                 new Card(CardType.FIVE, CardColor.CLUB),
                 new Card(CardType.FIVE, CardColor.DIAMOND),
                 new Card(CardType.FIVE, CardColor.HEART),
@@ -234,7 +234,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isTwoPair_Test() {
         //fine two pair
-        Hand twoPairHand = new Hand(Arrays.asList(
+        Hand twoPairHand = new Hand(List.of(
                 new Card(CardType.FIVE, CardColor.CLUB),
                 new Card(CardType.FIVE, CardColor.DIAMOND),
                 new Card(CardType.TWO, CardColor.HEART),
@@ -247,7 +247,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isTwoPair_Wrong_Test() {
         //wrong two pair
-        Hand twoPairWrongHand = new Hand(Arrays.asList(
+        Hand twoPairWrongHand = new Hand(List.of(
                 new Card(CardType.FIVE, CardColor.CLUB),
                 new Card(CardType.FIVE, CardColor.DIAMOND),
                 new Card(CardType.TWO, CardColor.HEART),
@@ -260,7 +260,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isOnePair_Test() {
         //fine one pair
-        Hand onePairHand = new Hand(Arrays.asList(
+        Hand onePairHand = new Hand(List.of(
                 new Card(CardType.FIVE, CardColor.CLUB),
                 new Card(CardType.FIVE, CardColor.DIAMOND),
                 new Card(CardType.J, CardColor.HEART),
@@ -273,7 +273,7 @@ public class HandTypeCalculatorTest {
     @Test
     public void isOnePair_Wrong_Test() {
         //wrong one pair
-        Hand onePairWrongHand = new Hand(Arrays.asList(
+        Hand onePairWrongHand = new Hand(List.of(
                 new Card(CardType.FIVE, CardColor.CLUB),
                 new Card(CardType.FOUR, CardColor.DIAMOND),
                 new Card(CardType.TEN, CardColor.HEART),
@@ -285,7 +285,7 @@ public class HandTypeCalculatorTest {
 
     @Test
     public void isHighCard_Test() {
-        Hand highCardHand = new Hand(Arrays.asList(
+        Hand highCardHand = new Hand(List.of(
                 new Card(CardType.FIVE, CardColor.CLUB),
                 new Card(CardType.FOUR, CardColor.DIAMOND),
                 new Card(CardType.TEN, CardColor.HEART),

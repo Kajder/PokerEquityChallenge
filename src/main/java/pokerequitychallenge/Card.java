@@ -16,7 +16,7 @@ public class Card implements Comparable<Card> {
 
     @Override
     public String toString() {
-        return cardType.toString() + " - " + cardColor.toString();
+        return cardType.toString() + "-" + cardColor.toString();
     }
 
     @Override
