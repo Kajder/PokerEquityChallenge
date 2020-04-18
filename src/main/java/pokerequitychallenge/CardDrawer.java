@@ -4,8 +4,6 @@ import lombok.Getter;
 import pokerequitychallenge.Exception.NotEnoughCardsInDeck;
 import pokerequitychallenge.Exception.RiverSizeExceeded;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -17,17 +15,17 @@ public class CardDrawer {
     List<Card> currentDeck;
 
     public CardDrawer() {
-        this.currentDeck = new ArrayList<>(CardDeck.deck);
+        this.currentDeck = new LinkedList<>(CardDeck.deck);
     }
 
-    public void rebuildRandomDeckExcluding(List<Card> cardsToExclude) {
-        List<Card> deck = new ArrayList<>(CardDeck.deck);
+    public void rebuildDeckExcluding(List<Card> cardsToExclude) {
+        List<Card> deck = new LinkedList<>(CardDeck.deck);
         deck.removeAll(cardsToExclude);
         this.currentDeck = deck;
     }
 
     public List<Card> drawCards(int n) {
-//        if (n > 5) throw new RiverSizeExceeded();
+        if (n > 5) throw new RiverSizeExceeded();
 
         List<Card> cards = new LinkedList<>();
         for (int i = 0; i < n; i++) cards.add(drawCard());
@@ -40,23 +38,5 @@ public class CardDrawer {
         Card card = this.currentDeck.get(randomIndex);
         currentDeck.remove(randomIndex);
         return card;
-    }
-
-    public List<Card> drawFlop() {
-        return drawCards(3);
-    }
-
-    public List<Card> drawTurn(List<Card> flop) {
-        flop.addAll(drawCards(1));
-        return flop;
-    }
-
-    public List<Card> drawRiver(List<Card> turn) {
-        turn.addAll(drawCards(1));
-        return turn;
-    }
-
-    public List<Card> drawTwoIndividualCards() {
-        return drawCards(2);
     }
 }

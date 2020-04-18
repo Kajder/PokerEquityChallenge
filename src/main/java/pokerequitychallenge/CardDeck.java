@@ -2,13 +2,14 @@ package pokerequitychallenge;
 
 import lombok.Getter;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 public class CardDeck {
 
-    public static final List<Card> deck = new ArrayList<>();
+    public static final Set<Card> deck = new HashSet<>();
 
     static {
         List.of(CardType.class.getEnumConstants()).forEach(cardType ->

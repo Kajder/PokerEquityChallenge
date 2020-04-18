@@ -22,7 +22,6 @@ public class HandTypeCalculator {
     private static Integer numberOfPairs;
 
     static HandType calculateHandType(List<Card> cards) {
-        //TODO sprawdzenie liczby kart
         resetClassVariables();
         handCards = cards;
         sortedHandCards = handCards.stream().sorted().collect(Collectors.toList());
@@ -73,7 +72,7 @@ public class HandTypeCalculator {
         cardTypesCountersMap = new HashMap<>();
         CardType[] cardTypes = CardType.class.getEnumConstants();
 
-        Integer currentCount = 0;
+        Integer currentCount;
         for (CardType cardType : cardTypes) {
             cardTypesCountersMap.put(cardType, 0);
         }
