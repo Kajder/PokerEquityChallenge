@@ -10,7 +10,7 @@ public class Card implements Comparable<Card> {
     private final CardType cardType;
     private final CardColor cardColor;
 
-    public short getValue() {
+    public int getValue() {
         return this.cardType.value;
     }
 

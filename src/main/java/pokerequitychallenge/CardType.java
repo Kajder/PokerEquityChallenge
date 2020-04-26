@@ -16,10 +16,10 @@ public enum CardType {
     K(13),
     A(14);
 
-    public final short value;
+    public final int value;
 
     CardType(int value) {
-        this.value = (short) value;
+        this.value = value;
     }
 
 }

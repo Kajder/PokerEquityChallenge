@@ -1,9 +1,10 @@
 package pokerequitychallenge;
 
-import pokerequitychallenge.Exception.CardNotFound;
 import pokerequitychallenge.Exception.HandNotFound;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -13,6 +14,10 @@ import java.util.stream.Collectors;
  */
 
 public class HandsComparator {
+
+    private static final int STRAIGHT_FROM_ACE_CARDS_VALUES_SUM = 28;
+    private static final int STRAIGHT_FROM_THREE_CARDS_VALUES_SUM = 25;
+    private static final int STRAIGHT_FROM_TWO_CARDS_VALUES_SUM = 20;
 
     public static List<Hand> getWinningHands(List<Hand> handsList) {
         List<Hand> handsWithHighestHandTypesList = getHandsWithHighestHandTypeList(handsList);
@@ -37,6 +42,7 @@ public class HandsComparator {
 
 
     public static List<Hand> calculateWinningHands(List<Hand> handsWithHighestHandTypeList) {
+        handsWithHighestHandTypeList.forEach(Hand::setUtils);
         HandType handType = handsWithHighestHandTypeList.get(0).getHandType();
         switch (handType) {
             case ROYAL_FLUSH:
@@ -74,201 +80,70 @@ public class HandsComparator {
 
     //region Straight Flush
     public static List<Hand> findWinnersFrom_StraightFlushes(List<Hand> handsWith_StraightFlushesList) {
-        List<Hand> hands = handsWith_StraightFlushesList;
-        if (isThereAnyStraightStartingFromAce(handsWith_StraightFlushesList)
-                &&
-                isThereAnyStraightNotStartingFromAce(handsWith_StraightFlushesList)) {
-            hands = handsWith_StraightFlushesList
-                    .stream()
-                    .filter(hand -> !(hand.getHandCardsSorted().get(0).getCardType().equals(CardType.A)
-                            &&
-                            hand.getHandCardsSorted().get(1).getCardType().equals(CardType.FIVE)))
-                    .collect(Collectors.toList());
-        }
-        short maxCardValue = findGivenMaxCardValueFromHands(hands, 0);
-        return hands
+        int cardsValuesMaxSumFromStraightHands = findCardsValuesMaxSumFromStraightFlushHands(
+                handsWith_StraightFlushesList);
+        return handsWith_StraightFlushesList
                 .stream()
-                .filter(hand -> hand.getCardValue(0) == maxCardValue)
+                .filter(h -> h.getHandCardsValuesSum() == cardsValuesMaxSumFromStraightHands)
                 .collect(Collectors.toList());
     }
 
-    private static boolean isThereAnyStraightStartingFromAce(List<Hand> handsWith_Straights) {
-        return handsWith_Straights
+    private static int findCardsValuesMaxSumFromStraightFlushHands(List<Hand> handsWith_StraightFlushesList) {
+        int highestStraightCardsValuesSum = handsWith_StraightFlushesList
                 .stream()
-                .anyMatch(hand -> (hand.getHandCardsSorted().get(0).getCardType().equals(CardType.A)
-                        &&
-                        hand.getHandCardsSorted().get(1).getCardType().equals(CardType.FIVE)));
-    }
+                .map(Hand::getHandCardsValuesSum)
+                .max(Comparator.naturalOrder())
+                .orElseThrow(() -> new RuntimeException("Highest sum of hands cards could not be computed"));
 
-    private static boolean isThereAnyStraightNotStartingFromAce(List<Hand> handsWith_Straights) {
-        return handsWith_Straights
-                .stream()
-                .anyMatch(hand -> !(hand.getHandCardsSorted().get(0).getCardType().equals(CardType.A)
-                        &&
-                        hand.getHandCardsSorted().get(1).getCardType().equals(CardType.FIVE)));
+        if (highestStraightCardsValuesSum == STRAIGHT_FROM_ACE_CARDS_VALUES_SUM) {
+            if (handsWith_StraightFlushesList.stream().anyMatch(h -> h.getHandCardsValuesSum() == STRAIGHT_FROM_THREE_CARDS_VALUES_SUM))
+                return STRAIGHT_FROM_THREE_CARDS_VALUES_SUM;
+            if (handsWith_StraightFlushesList.stream().anyMatch(h -> h.getHandCardsValuesSum() == STRAIGHT_FROM_TWO_CARDS_VALUES_SUM))
+                return STRAIGHT_FROM_TWO_CARDS_VALUES_SUM;
+            return STRAIGHT_FROM_ACE_CARDS_VALUES_SUM;
+        } else {
+            return highestStraightCardsValuesSum;
+        }
     }
     //endregion
 
     //region Four Of Kind
     public static List<Hand> findWinnersFrom_FourOfKinds(List<Hand> handsWith_FourOfKindsList) {
-        //filter for highest fours only
-        Short maxValueOfCommonCards = findDefinedCardMaxValueWithinFourOfKinds(handsWith_FourOfKindsList, false);
-        handsWith_FourOfKindsList = filterHandsListForDefinedMaxValueCards(handsWith_FourOfKindsList, maxValueOfCommonCards, false);
+        CardType highestCardTypeOfCardsOccurringFourTimesInHand = findHighestTypeOfCardsOccurringNTimesAmongHands(
+                handsWith_FourOfKindsList, 4L);
 
-        //in case of a draw: find unique card type and filter for it
-        if (handsWith_FourOfKindsList.size() > 1) {
-            Short maxValueOfUniqueCards = findDefinedCardMaxValueWithinFourOfKinds(handsWith_FourOfKindsList, true);
-            handsWith_FourOfKindsList = filterHandsListForDefinedMaxValueCards(handsWith_FourOfKindsList, maxValueOfUniqueCards, true);
-        }
-        return handsWith_FourOfKindsList;
-    }
+        int cardsValuesMaxSumForHighestFourHands = findCardsValuesMaxSumOfHandsWithGivenCardTypeOccurringNTimes(
+                handsWith_FourOfKindsList, highestCardTypeOfCardsOccurringFourTimesInHand, 4L);
 
-    public static List<Hand> filterHandsListForDefinedMaxValueCards(List<Hand> handsWith_FourOfKindsList, Short maxValue, boolean unique) {
-        List<Hand> highestFoursList = new ArrayList<>();
-        Card commonCard;
-        for (Hand hand : handsWith_FourOfKindsList) {
-            commonCard = findDefinedCardWithinFourOfKinds(hand, unique);
-            if (commonCard.getValue() == maxValue) {
-                highestFoursList.add(hand);
-            }
-        }
-        return highestFoursList;
-    }
-
-    public static Short findDefinedCardMaxValueWithinFourOfKinds(List<Hand> handsWith_FourOfKindsList, boolean unique) {
-        Card definedCard;
-        Short maxValueOfDefinedCards = 0;
-
-        for (Hand hand : handsWith_FourOfKindsList) {
-            definedCard = findDefinedCardWithinFourOfKinds(hand, unique);
-            if (definedCard.getValue() > maxValueOfDefinedCards)
-                maxValueOfDefinedCards = definedCard.getValue();
-        }
-        return maxValueOfDefinedCards;
-    }
-
-    public static Card findDefinedCardWithinFourOfKinds(Hand hand, boolean unique) {
-        boolean firstEqualThird = hand.getHandCardsSorted().get(0).getCardType()
-                .equals(hand.getHandCardsSorted().get(2).getCardType());
-        return unique == firstEqualThird
-                ? hand.getHandCardsSorted().get(4)
-                : hand.getHandCardsSorted().get(0);
+        return handsWith_FourOfKindsList
+                .stream()
+                .filter(h -> h.getHandCardsTypesOccurrences().get(highestCardTypeOfCardsOccurringFourTimesInHand).equals(4L))
+                .filter(h -> h.getHandCardsValuesSum() == cardsValuesMaxSumForHighestFourHands)
+                .collect(Collectors.toList());
     }
     //endregion
 
     //region Full House
     protected static List<Hand> findWinnersFrom_FullHouses(List<Hand> handsWith_FullHousesList) {
-        Short highestThreeValue = findHighestThreeValueOfFullHouses(handsWith_FullHousesList);
-        List<Hand> handsWith_HighestThrees = findFullHouseHandsWithGivenThreeValue(handsWith_FullHousesList, highestThreeValue);
-        Short highestTwoValue = findHighestTwoValueOfFullHouses(handsWith_HighestThrees);
-        return findFullHouseHandsWithGivenTwoValue(handsWith_HighestThrees, highestTwoValue);
-    }
+        CardType highestCardTypeOfCardsOccurringThreeTimesInHands = findHighestTypeOfCardsOccurringNTimesAmongHands(
+                handsWith_FullHousesList, 3L);
 
-    private static List<Hand> findFullHouseHandsWithGivenThreeValue(List<Hand> handsWith_FullHousesList, Short highestThreeValue) {
-        List<Hand> fullHouseHandsWithGivenThreeValue = new ArrayList<>();
-        Short firstCardOfHandValue;
-        Short thirdCardOfHandValue;
+        int cardsValuesMaxSumForHighestThreeHands = findCardsValuesMaxSumOfHandsWithGivenCardTypeOccurringNTimes(
+                handsWith_FullHousesList, highestCardTypeOfCardsOccurringThreeTimesInHands, 3L);
 
-        for (Hand handWithAThree : handsWith_FullHousesList) {
-            firstCardOfHandValue = handWithAThree.getCardValue(0);
-            ;
-            thirdCardOfHandValue = handWithAThree.getHandCardsSorted().get(2).getValue();
-            if (firstCardOfHandValue.equals(thirdCardOfHandValue)) {
-                if (firstCardOfHandValue.equals(highestThreeValue))
-                    fullHouseHandsWithGivenThreeValue.add(handWithAThree);
-            } else {
-                if (thirdCardOfHandValue.equals(highestThreeValue))
-                    fullHouseHandsWithGivenThreeValue.add(handWithAThree);
-            }
-        }
-
-        return fullHouseHandsWithGivenThreeValue;
-    }
-
-    private static Short findHighestThreeValueOfFullHouses(List<Hand> handsWith_FullHousesList) {
-        Short highestThreeValue = 2;
-        Short firstCardOfHandValue;
-        Short thirdCardOfHandValue;
-
-        for (Hand handWithAThree : handsWith_FullHousesList) {
-            firstCardOfHandValue = handWithAThree.getCardValue(0);
-            thirdCardOfHandValue = handWithAThree.getCardValue(2);
-            if (firstCardOfHandValue.equals(thirdCardOfHandValue)) {
-                if (firstCardOfHandValue > highestThreeValue) highestThreeValue = firstCardOfHandValue;
-            } else {
-                if (thirdCardOfHandValue > highestThreeValue) highestThreeValue = thirdCardOfHandValue;
-            }
-        }
-        return highestThreeValue;
-    }
-
-    private static List<Hand> findFullHouseHandsWithGivenTwoValue(List<Hand> handsWith_FullHousesList, Short highestTwoValue) {
-        List<Hand> fullHouseHandsWithGivenTwoValue = new ArrayList<>();
-        short firstCardOfHandValue;
-        short thirdCardOfHandValue;
-        short fourthCardOfHandValue;
-
-        for (Hand handWithATwo : handsWith_FullHousesList) {
-            firstCardOfHandValue = handWithATwo.getCardValue(0);
-            thirdCardOfHandValue = handWithATwo.getCardValue(2);
-            fourthCardOfHandValue = handWithATwo.getCardValue(3);
-            if (firstCardOfHandValue == thirdCardOfHandValue) {
-                if (fourthCardOfHandValue == highestTwoValue) fullHouseHandsWithGivenTwoValue.add(handWithATwo);
-            } else {
-                if (firstCardOfHandValue == highestTwoValue) fullHouseHandsWithGivenTwoValue.add(handWithATwo);
-            }
-        }
-
-        return fullHouseHandsWithGivenTwoValue;
-    }
-
-    public static Short findHighestTwoValueOfFullHouses(List<Hand> handsWith_FullHousesList) {
-        Short highestTwoValue = 2;
-        Short firstCardOfHandValue;
-        Short thirdCardOfHandValue;
-        Short fourthCardOfHandValue;
-
-        for (Hand handWithATwo : handsWith_FullHousesList) {
-            firstCardOfHandValue = handWithATwo.getCardValue(0);
-            thirdCardOfHandValue = handWithATwo.getCardValue(2);
-            fourthCardOfHandValue = handWithATwo.getCardValue(3);
-            if (firstCardOfHandValue.equals(thirdCardOfHandValue)) {
-                if (fourthCardOfHandValue > highestTwoValue) {
-                    highestTwoValue = fourthCardOfHandValue;
-                }
-            } else if (firstCardOfHandValue > highestTwoValue) {
-                highestTwoValue = firstCardOfHandValue;
-            }
-        }
-        return highestTwoValue;
+        return handsWith_FullHousesList
+                .stream()
+                .filter(h -> h.getHandCardsTypesOccurrences().containsKey(highestCardTypeOfCardsOccurringThreeTimesInHands)
+                        &&
+                        h.getHandCardsTypesOccurrences().get(highestCardTypeOfCardsOccurringThreeTimesInHands).equals(3L))
+                .filter(h -> h.getHandCardsValuesSum() == cardsValuesMaxSumForHighestThreeHands)
+                .collect(Collectors.toList());
     }
     //endregion
 
     //region Flush
     public static List<Hand> findWinnersFrom_Flushes(List<Hand> handsWith_FlushesList) {
-        short maxCardValue;
-        for (int i = 0; i < 4; i++) {
-            maxCardValue = findGivenMaxCardValueFromHands(handsWith_FlushesList, i);
-            for (int j = 0; j < handsWith_FlushesList.size(); j++) {
-                if (handsWith_FlushesList.get(j).getHandCardsSorted().get(i).getValue()
-                        != maxCardValue) {
-                    handsWith_FlushesList.remove(j);
-                    if (handsWith_FlushesList.size() == 1) {
-                        return handsWith_FlushesList;
-                    }
-                    j--;
-                }
-            }
-        }
-        return handsWith_FlushesList;
-    }
-
-    private static short findGivenMaxCardValueFromHands(List<Hand> hands, int i) {
-        return hands
-                .stream()
-                .map(hand -> hand.getHandCardsSorted().get(i).getValue())
-                .max(Comparator.comparing(Integer::valueOf))
-                .orElseThrow(() -> new RuntimeException("Max card value not found"));
+        return findWinnersFrom_HighCards(handsWith_FlushesList);
     }
     //endregion
 
@@ -280,267 +155,163 @@ public class HandsComparator {
 
     //region Three Of Kind
     public static List<Hand> findWinnersFrom_ThreeOfKinds(List<Hand> handsWith_ThreeOfKinds) {
-        short maxThreeValue = findHighestThreeValueOfFullHouses(handsWith_ThreeOfKinds);
-        List<Hand> handsWith_HighestThree = findFullHouseHandsWithGivenThreeValue(
-                handsWith_ThreeOfKinds, maxThreeValue);
-        List<Short> valuesToSkip = new ArrayList<>();
-        valuesToSkip.add(maxThreeValue);
-        if (handsWith_HighestThree.size() == 1) {
-            return handsWith_HighestThree;
-        }
+        handsWith_ThreeOfKinds.forEach(h -> h.setNonFigureCardsValue(calculateNonFiguredCardsValuesSum(h)));
 
-        short maxNonThreeValue = findCardMaxValueFromHandsDifferentThanGivenValue(
-                handsWith_HighestThree,
-                valuesToSkip);
-        valuesToSkip.add(maxNonThreeValue);
-        List<Hand> handsWith_HighestThreeAndHighestSingleCard = handsWith_HighestThree
+        CardType highestThreeCardType = findHighestTypeOfCardsOccurringNTimesAmongHands(handsWith_ThreeOfKinds, 3L);
+
+        int highestNonFiguredCardsSum = findMaxNonFiguredCardsValuesSumAmongHands(
+                handsWith_ThreeOfKinds
+                        .stream()
+                        .filter(h -> h.getHandCardsTypesOccurrences().containsKey(highestThreeCardType)
+                                && h.getHandCardsTypesOccurrences().get(highestThreeCardType).equals(3L))
+                        .collect(Collectors.toList()));
+
+        return handsWith_ThreeOfKinds
                 .stream()
-                .filter(hand -> isThereCardWithGivenValueWithinHand(hand, maxNonThreeValue))
+                .filter(h -> h.getHandCardsTypesOccurrences().containsKey(highestThreeCardType)
+                        && h.getHandCardsTypesOccurrences().get(highestThreeCardType).equals(3L))
+                .filter(h -> h.getNonFigureCardsValue() == highestNonFiguredCardsSum)
                 .collect(Collectors.toList());
-
-        if (handsWith_HighestThreeAndHighestSingleCard.size() == 1) {
-            return handsWith_HighestThreeAndHighestSingleCard;
-        }
-
-        short maxNonThreeValueAmongHandsLeft = findCardMaxValueFromHandsDifferentThanGivenValue(
-                handsWith_HighestThreeAndHighestSingleCard, valuesToSkip);
-
-        return handsWith_HighestThreeAndHighestSingleCard
-                .stream()
-                .filter(hand -> isThereCardWithGivenValueWithinHand(hand, maxNonThreeValueAmongHandsLeft))
-                .collect(Collectors.toList());
-    }
-
-    private static boolean isThereCardWithGivenValueWithinHand(Hand hand, short cardValue) {
-        return hand.getHandCards()
-                .stream()
-                .anyMatch(card -> card.getValue() == cardValue);
-    }
-
-    private static short findCardMaxValueFromHandsDifferentThanGivenValue(List<Hand> hands, List<Short> valuesToSkip) {
-        short maxNonThreeValue = 2;
-        short cardValue;
-        for (Hand hand : hands) {
-            for (int j = 0; j < 5; j++) {
-                cardValue = hand.getHandCards().get(j).getValue();
-                if ((cardValue > maxNonThreeValue) && (!valuesToSkip.contains(cardValue))) {
-                    maxNonThreeValue = cardValue;
-                }
-            }
-        }
-        return maxNonThreeValue;
     }
     //endregion
 
     //region Two Pairs
     public static List<Hand> findWinnersFrom_TwoPairs(List<Hand> handsWith_TwoPairs) {
-        short highestPairValue = findHighestValueOfGivenCardsFromTwoPairHands(
-                handsWith_TwoPairs,
-                (short) 0,
-                (short) 1);
-        List<Hand> handsWithHighestHigherPair = filterForHandsWithGivenValueOfGivenCards(
-                handsWith_TwoPairs,
-                highestPairValue,
-                (short) 1);
-        if (handsWithHighestHigherPair.size() == 1) {
-            return handsWithHighestHigherPair;
-        }
+        CardType highestPairCardType = findHighestTypeOfCardsOccurringNTimesAmongHands(handsWith_TwoPairs, 2L);
 
-        short highestFromSecondaryPairsValue = findHighestValueOfGivenCardsFromTwoPairHands(
-                handsWithHighestHigherPair,
-                (short) 2,
-                (short) 3);
-        List<Hand> handsWithHighestLowerPair = filterForHandsWithGivenValueOfGivenCards(
-                handsWithHighestHigherPair,
-                highestFromSecondaryPairsValue,
-                (short) 3);
-        if (handsWithHighestLowerPair.size() == 1) {
-            return handsWithHighestLowerPair;
-        }
-        short highestFromSingleCards = findHighestValueOfSingleCards(
-                handsWithHighestLowerPair,
-                highestPairValue,
-                highestFromSecondaryPairsValue);
-        return filterForTwoPairHandsWithHighestSingleCard(handsWithHighestLowerPair, highestFromSingleCards);
-    }
+        CardType highestSecondPairCardTypeFromHandsWithHighestPair = findHighestPairCardTypeOtherThanGivenFromHands(
+                handsWith_TwoPairs, highestPairCardType);
 
-    private static short findHighestValueOfGivenCardsFromTwoPairHands(
-            List<Hand> hands,
-            short cardIndex_1,
-            short cardIndex_2) {
-        short higherPairValue;
-        short highestPairValue = 0;
-        for (Hand hand : hands) {
-            if (hand.getCardValue(cardIndex_1) == hand.getCardValue(cardIndex_2)) {
-                higherPairValue = hand.getCardValue(cardIndex_1);
-            } else {
-                higherPairValue = hand.getCardValue(cardIndex_2);
-            }
-            if (higherPairValue > highestPairValue) {
-                highestPairValue = higherPairValue;
-            }
-        }
-        return highestPairValue;
-    }
+        int cardsValuesMaxSumOfHandsWithHighestPairAndHighestSecondPair = findCardsValuesMaxSumOfHandsWithHighestPairAndHighestSecondPair(
+                handsWith_TwoPairs, highestPairCardType, highestSecondPairCardTypeFromHandsWithHighestPair);
 
-    private static List<Hand> filterForHandsWithGivenValueOfGivenCards(
-            List<Hand> hands,
-            short cardValue,
-            short cardIndex_1) {
-        return hands
+        return handsWith_TwoPairs
                 .stream()
-                .filter(hand -> hand.getCardValue(cardIndex_1) == cardValue)
+                .filter(h -> h.getHandCardsTypesOccurrences().containsKey(highestPairCardType)
+                        && h.getHandCardsTypesOccurrences().get(highestPairCardType).equals(2L))
+                .filter(h -> h.getHandCardsTypesOccurrences().containsKey(highestSecondPairCardTypeFromHandsWithHighestPair)
+                        && h.getHandCardsTypesOccurrences().get(highestSecondPairCardTypeFromHandsWithHighestPair).equals(2L))
+                .filter(h -> h.getHandCardsValuesSum() == cardsValuesMaxSumOfHandsWithHighestPairAndHighestSecondPair)
                 .collect(Collectors.toList());
     }
 
-    private static short findHighestValueOfSingleCards(
-            List<Hand> hands,
-            short higherPairValue,
-            short lowerPairValue) {
-        short highestSingleCardValue = 0;
-        short singleCardValue;
-        for (Hand hand : hands) {
-            singleCardValue = hand.getHandCards()
-                    .stream()
-                    .filter(card -> ((card.getValue() != higherPairValue)
-                            &&
-                            (card.getValue() != lowerPairValue)))
-                    .findFirst()
-                    .orElseThrow(CardNotFound::new)
-                    .getValue();
-            if (singleCardValue > highestSingleCardValue) {
-                highestSingleCardValue = singleCardValue;
-            }
-        }
-        return highestSingleCardValue;
-    }
-
-
-    private static List<Hand> filterForTwoPairHandsWithHighestSingleCard(List<Hand> hands, short singleCardValue) {
+    private static CardType findHighestPairCardTypeOtherThanGivenFromHands(List<Hand> hands, CardType highestPairCardType) {
         return hands
                 .stream()
-                .filter(hand -> hand.getCardValue(0) == singleCardValue
-                        || hand.getCardValue(2) == singleCardValue
-                        || hand.getCardValue(4) == singleCardValue)
-                .collect(Collectors.toList());
+                .filter(h -> h.getHandCardsTypesOccurrences().containsKey(highestPairCardType)
+                        && h.getHandCardsTypesOccurrences().get(highestPairCardType).equals(2L))
+                .flatMap(h -> h.getHandCards()
+                        .stream()
+                        .filter(c -> h.getHandCardsTypesOccurrences().get(c.getCardType()).equals(2L))
+                        .map(Card::getCardType))
+                .filter(t -> !t.equals(highestPairCardType))
+                .reduce((a, b) -> a.value > b.value ? a : b)
+                .orElseThrow(() -> new RuntimeException("Second highest pair cards type of hands with highest pair was not found"));
+    }
+
+    private static int findCardsValuesMaxSumOfHandsWithHighestPairAndHighestSecondPair(List<Hand> hands,
+                                                                                       CardType highestPairCardType,
+                                                                                       CardType highestSecondPairCardType) {
+        return hands
+                .stream()
+                .filter(h -> h.getHandCardsTypesOccurrences().containsKey(highestPairCardType)
+                        && h.getHandCardsTypesOccurrences().get(highestPairCardType).equals(2L))
+                .filter(h -> h.getHandCardsTypesOccurrences().containsKey(highestSecondPairCardType)
+                        && h.getHandCardsTypesOccurrences().get(highestSecondPairCardType).equals(2L))
+                .map(Hand::getHandCardsValuesSum)
+                .max(Integer::compare)
+                .orElseThrow(() -> new RuntimeException("Could not find max sum of hands with two highest pairs"));
     }
     //endregion
 
     //region One Pair
     public static List<Hand> findWinnersFrom_OnePairs(List<Hand> handsWith_OnePair) {
-        Set<Short> valuesToSkipWhenFilteringForHighest = new HashSet<>();
-        //highest pair
-        short highestPairValue = findHighestPairValue(handsWith_OnePair);
-        List<Hand> handsWithHighestPair = filterForHandsWithGivenPairValue(
-                handsWith_OnePair,
-                highestPairValue);
-        if (handsWithHighestPair.size() == 1) {
-            return handsWithHighestPair;
-        }
+        handsWith_OnePair.forEach(h -> h.setNonFigureCardsValue(calculateNonFiguredCardsValuesSum(h)));
 
-        //highest single card
-        valuesToSkipWhenFilteringForHighest.add(highestPairValue);
-        short highestSingleCardValueDifferentThanThePair = findHighestCardValueDifferentThanGivenValues(
-                handsWithHighestPair,
-                valuesToSkipWhenFilteringForHighest);
-        List<Hand> handsWithHighestSingleCardOfCardsWithHighestPair = filterForHandsWithGivenSingleCardValue(
-                handsWithHighestPair,
-                highestSingleCardValueDifferentThanThePair);
-        if (handsWithHighestSingleCardOfCardsWithHighestPair.size() == 1) {
-            return handsWithHighestSingleCardOfCardsWithHighestPair;
-        }
+        CardType highestPairCardType = findHighestTypeOfCardsOccurringNTimesAmongHands(handsWith_OnePair, 2L);
 
-        //second highest single card
-        valuesToSkipWhenFilteringForHighest.add(highestSingleCardValueDifferentThanThePair);
-        short secondHighestSingleCardValue = findHighestCardValueDifferentThanGivenValues(
-                handsWithHighestSingleCardOfCardsWithHighestPair,
-                valuesToSkipWhenFilteringForHighest);
-        List<Hand> handsWithTwoHighestSingleCardsOfCardsWithHighestPair = filterForHandsWithGivenSingleCardValue(
-                handsWithHighestSingleCardOfCardsWithHighestPair,
-                secondHighestSingleCardValue);
-        if (handsWithTwoHighestSingleCardsOfCardsWithHighestPair.size() == 1) {
-            return handsWithTwoHighestSingleCardsOfCardsWithHighestPair;
-        }
+        int highestNonFiguredCardsSum = findMaxNonFiguredCardsValuesSumAmongHands(
+                handsWith_OnePair
+                        .stream()
+                        .filter(h -> h.getHandCardsTypesOccurrences().containsKey(highestPairCardType)
+                                && h.getHandCardsTypesOccurrences().get(highestPairCardType).equals(2L))
+                        .collect(Collectors.toList()));
 
-        //third highest single card
-        valuesToSkipWhenFilteringForHighest.add(secondHighestSingleCardValue);
-        short thirdHighestSingleCardValue = findHighestCardValueDifferentThanGivenValues(
-                handsWithTwoHighestSingleCardsOfCardsWithHighestPair,
-                valuesToSkipWhenFilteringForHighest);
-        return filterForHandsWithGivenSingleCardValue(
-                handsWithTwoHighestSingleCardsOfCardsWithHighestPair,
-                thirdHighestSingleCardValue);
-    }
-
-    private static short findHighestPairValue(List<Hand> hands) {
-        short pairValue;
-        short highestPairValue = 0;
-        for (Hand hand : hands) {
-            pairValue = findPairValueWithinOnePairHand(hand);
-            if (pairValue > highestPairValue) {
-                highestPairValue = pairValue;
-            }
-        }
-        return highestPairValue;
-    }
-
-    private static short findCountOfGivenCardValueWithinGivenHand(Hand hand, short cardValue) {
-        return (short) hand.getHandCards()
+        return handsWith_OnePair
                 .stream()
-                .map(Card::getValue)
-                .filter(v -> v == (cardValue))
-                .count();
-    }
-
-    private static List<Hand> filterForHandsWithGivenPairValue(List<Hand> hands, short pairValue) {
-        return hands
-                .stream()
-                .filter(hand -> findCountOfGivenCardValueWithinGivenHand(hand, pairValue) == 2)
-                .collect(Collectors.toList());
-    }
-
-    private static short findPairValueWithinOnePairHand(Hand hand) {
-        for (int i = 0; i < 4; i++) {
-            if ((hand.getCardValue(i) == hand.getCardValue(i + 1)))
-                return hand.getCardValue(i);
-        }
-        throw new RuntimeException("No pair found within One Pair hand");
-    }
-
-    private static short findHighestCardValueDifferentThanGivenValues(List<Hand> hands, Set<Short> values) {
-        Set<Short> allCardValues = new HashSet<>();
-        for (Hand hand : hands) {
-            allCardValues.addAll(hand.getHandCards().stream().map(Card::getValue).collect(Collectors.toSet()));
-        }
-        allCardValues.removeAll(values);
-        return Collections.max(allCardValues);
-    }
-
-    private static List<Hand> filterForHandsWithGivenSingleCardValue(List<Hand> hands, short cardValue) {
-        return hands
-                .stream()
-                .filter(hand -> findCountOfGivenCardValueWithinGivenHand(hand, cardValue) == 1)
+                .filter(h -> h.getHandCardsTypesOccurrences().containsKey(highestPairCardType)
+                        && h.getHandCardsTypesOccurrences().get(highestPairCardType).equals(2L))
+                .filter(h -> h.getNonFigureCardsValue() == highestNonFiguredCardsSum)
                 .collect(Collectors.toList());
     }
     //endregion
 
     //region Highest Card
     public static List<Hand> findWinnersFrom_HighCards(List<Hand> handsWith_HighCards) {
-        Set<Short> valuesToSkipWhenFilteringForHighest = new HashSet<>();
-        List<Hand> hands = handsWith_HighCards;
-        short nextHighestCardValue;
+        handsWith_HighCards.forEach(h -> h.setNonFigureCardsValue(calculateNonFiguredCardsValuesSum(h)));
 
-        for (int i = 0; i < 5; i++) {
-            nextHighestCardValue = findHighestCardValueDifferentThanGivenValues(
-                    hands,
-                    valuesToSkipWhenFilteringForHighest);
-            valuesToSkipWhenFilteringForHighest.add(nextHighestCardValue);
-            hands = filterForHandsWithGivenSingleCardValue(
-                    hands,
-                    nextHighestCardValue);
-            if (hands.size() == 1) return hands;
-        }
-        return hands;
+        int highestNonFiguredCardsSum = findMaxNonFiguredCardsValuesSumAmongHands(handsWith_HighCards);
+
+        return handsWith_HighCards
+                .stream()
+                .filter(h -> h.getNonFigureCardsValue() == highestNonFiguredCardsSum)
+                .collect(Collectors.toList());
     }
     //endregion
+
+    private static CardType findHighestTypeOfCardsOccurringNTimesAmongHands(List<Hand> handsWith_FourOfKindsList, long n) {
+        return handsWith_FourOfKindsList
+                .stream()
+                .map(h -> h.getHandCardsTypesOccurrences().entrySet()
+                        .stream()
+                        .filter(entry -> entry.getValue().equals(n))
+                        .map(Map.Entry::getKey)
+                        .reduce((a, b) -> a.value > b.value ? a : b)
+                        .orElseThrow(() -> new RuntimeException(
+                                String.format("Card Type with %d occurrences not found", n))))
+                .reduce((a, b) -> a.value > b.value ? a : b)
+                .orElseThrow(() -> new RuntimeException(
+                        String.format("Max Card Type of cards occurring %d times was not found", n)));
+    }
+
+    private static int findCardsValuesMaxSumOfHandsWithGivenCardTypeOccurringNTimes(
+            List<Hand> hands, CardType highestCardTypeOccurringNTimes, long n) {
+        return hands.stream()
+                .filter(h -> h.getHandCardsTypesOccurrences().containsKey(highestCardTypeOccurringNTimes)
+                        &&
+                        h.getHandCardsTypesOccurrences().get(highestCardTypeOccurringNTimes).equals(n))
+                .map(Hand::getHandCardsValuesSum)
+                .max(Integer::compare)
+                .orElseThrow(() -> new RuntimeException(
+                        String.format("Max sum of cards values for hand with highest %d cards was not found", n)));
+    }
+
+    private static int calculateNonFiguredCardsValuesSum(Hand hand) {
+        if (!List.of(HandType.HIGH_CARD, HandType.ONE_PAIR, HandType.THREE_OF_A_KIND, HandType.FLUSH).contains(hand.getHandType())) {
+            throw new RuntimeException("Hand Type not appropriate for calculation of non figured cards values sum");
+        }
+        if (null == hand.getHandCardsTypesOccurrences()) {
+            throw new RuntimeException("Hand Cards Types Occurrences map has not been created");
+        }
+        List<Integer> singleNonFiguredCards = hand.getHandCardsTypesOccurrences().entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().equals(1L))
+                .map(entry -> entry.getKey().value)
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toList());
+
+        int nonFigureCardsValuesSum = 0;
+        for (int i = 0; i < singleNonFiguredCards.size(); i++) {
+            nonFigureCardsValuesSum = nonFigureCardsValuesSum + (int) (singleNonFiguredCards.get(i) * Math.pow(14, i));
+        }
+        return nonFigureCardsValuesSum;
+    }
+
+    private static int findMaxNonFiguredCardsValuesSumAmongHands(List<Hand> hands) {
+        return hands
+                .stream()
+                .map(Hand::getNonFigureCardsValue)
+                .max(Integer::compareTo)
+                .orElseThrow(() -> new RuntimeException("Highest Non Figured Cards Sum was not found"));
+    }
 }

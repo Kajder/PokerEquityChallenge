@@ -3,23 +3,26 @@ package pokerequitychallenge;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Getter
 public class Hand implements Comparable<Hand> {
 
+    private final List<Card> handCards;
+    private final HandType handType;
     private int playerId;
-    private HandType handType;
-    private List<Card> handCards;
-    private List<Card> handCardsSorted;
+    private int nonFigureCardsValue;
+    private int handCardsValuesSum;
+    private Map<CardType, Long> handCardsTypesOccurrences;
 
     public Hand(List<Card> handCards) {
-        this.handCards = new LinkedList<>(handCards);
+        this.handCards = handCards.stream().sorted().collect(Collectors.toList());
         this.handType = HandTypeCalculator.calculateHandType(handCards);
-        this.handCardsSorted = handCards.stream().sorted().collect(Collectors.toList());
     }
 
     public Hand(CardType type_1, CardColor color_1,
@@ -33,13 +36,22 @@ public class Hand implements Comparable<Hand> {
         handCards.add(new Card(type_3, color_3));
         handCards.add(new Card(type_4, color_4));
         handCards.add(new Card(type_5, color_5));
-        this.handCards = handCards;
+        this.handCards = handCards.stream().sorted().collect(Collectors.toList());
         this.handType = HandTypeCalculator.calculateHandType(handCards);
-        this.handCardsSorted = handCards.stream().sorted().collect(Collectors.toList());
+        setUtils();
     }
 
-    short getCardValue(int sortedCardIndex) {
-        return handCardsSorted.get(sortedCardIndex).getValue();
+    public void setUtils() {
+        handCardsValuesSum = handCards.stream().map(Card::getValue).reduce(0, Integer::sum);
+        handCardsTypesOccurrences = handCards.stream().collect(groupingBy(Card::getCardType, Collectors.counting()));
+    }
+
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
+    }
+
+    public void setNonFigureCardsValue(int value) {
+        this.nonFigureCardsValue = value;
     }
 
     @Override
@@ -50,9 +62,5 @@ public class Hand implements Comparable<Hand> {
     @Override
     public String toString() {
         return handType.toString() + ": " + handCards.stream().map(Objects::toString).collect(Collectors.joining(", "));
-    }
-
-    public void setPlayerId(int playerId) {
-        this.playerId = playerId;
     }
 }

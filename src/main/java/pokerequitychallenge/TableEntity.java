@@ -13,16 +13,16 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class TableEntity {
 
-    List<Card> river = new LinkedList<>();
+    List<Card> board = new LinkedList<>();
     List<PlayerHand> playerHands = new LinkedList<>();
 
-    TableEntity(EquityRequest equityRequest) {
-        for (Card card : equityRequest.river) {
-            this.river.add(
+    public TableEntity(EquityRequest equityRequest) {
+        for (Card card : equityRequest.getBoard()) {
+            this.board.add(
                     new Card(card.getCardType(), card.getCardColor()));
         }
 
-        for (PlayerHand playerHand : equityRequest.playerHands) {
+        for (PlayerHand playerHand : equityRequest.getPlayerHands()) {
             this.playerHands.add(
                     new PlayerHand(
                             playerHand.playerId,

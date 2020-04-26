@@ -1,29 +1,50 @@
 plugins {
-	id 'org.springframework.boot' version '2.1.7.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
-	id 'java'
+    id 'org.springframework.boot' version '2.2.2.RELEASE'
+//    id 'org.springframework.boot' version '2.2.3.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'java'
+    id 'groovy'
 }
 
 group = 'poker-equity-challenge'
 version = '1.0.1'
-sourceCompatibility = '1.8'
+sourceCompatibility = '11'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+//    maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local/' }
+    mavenLocal()
+    mavenCentral()
+//    mavenCentral()
+}
+
+ext {
+//    set('swaggerVersion', "2.9.2")
+//    set('swaggerVersion', "3.0.0-SNAPSHOT")
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'org.postgresql:postgresql'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//    implementation "io.springfox:springfox-swagger-ui:${swaggerVersion}"
+//    implementation "io.springfox:springfox-swagger2:${swaggerVersion}"
+//    implementation 'org.springframework.boot:spring-boot-configuration-processor'
+//    implementation 'org.springframework.boot:spring-boot-devtools'
+//    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+//    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+//    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-parent:2.2.2.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+//    implementation "io.springfox:springfox-swagger-ui:${swaggerVersion}"
+//    implementation "io.springfox:springfox-swagger2:${swaggerVersion}"
+//    implementation "io.springfox:springfox-data-rest:${swaggerVersion}"
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

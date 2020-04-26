@@ -6,6 +6,3 @@ public class main {
         new Game();
     }
 }
-
-//TODO stworzyć własne wyjątki i obstawiać nimi kod z góry na dół (szczegołnie dużo przy liczeniu rąk,
-// bo każda metoda powinna być zabezpieczona przed podaniem błędnych argumentów

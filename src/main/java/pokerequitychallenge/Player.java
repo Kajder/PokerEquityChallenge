@@ -9,9 +9,10 @@ import java.util.List;
 @Getter
 public class Player {
 
-    List<Card> pair;
-    Hand highestHand;
-    int id;
+    private static final int AVAILABLE_CARDS_NUMBER = 7;
+    private final int id;
+    private final List<Card> pair;
+    private Hand highestHand;
 
     public Player(int id, List<Card> pair) {
         this.id = id;
@@ -24,8 +25,8 @@ public class Player {
 
         List<Hand> possibleHands = new LinkedList<>();
         List<Card> handCards = new LinkedList<>();
-        for (int i = 0; i < 6; i++) {
-            for (int j = i + 1; j < 7; j++) {
+        for (int i = 0; i < AVAILABLE_CARDS_NUMBER - 1; i++) {
+            for (int j = i + 1; j < AVAILABLE_CARDS_NUMBER; j++) {
                 handCards.addAll(pool);
                 Card firstCardToRemove = handCards.get(i);
                 Card secondCardToRemove = handCards.get(j);

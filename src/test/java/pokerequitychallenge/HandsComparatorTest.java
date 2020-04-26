@@ -10,88 +10,89 @@ import static org.junit.Assert.assertNotEquals;
 
 
 public class HandsComparatorTest {
-    private static CardType A = CardType.A;
-    private static CardType TWO = CardType.TWO;
-    private static CardType THREE = CardType.THREE;
-    private static CardType FOUR = CardType.FOUR;
-    private static CardType FIVE = CardType.FIVE;
-    private static CardType SIX = CardType.SIX;
-    private static CardType SEVEN = CardType.SEVEN;
-    private static CardType EIGHT = CardType.EIGHT;
-    private static CardType NINE = CardType.NINE;
-    private static CardType TEN = CardType.TEN;
-    private static CardType J = CardType.J;
-    private static CardType Q = CardType.Q;
-    private static CardType K = CardType.K;
-    private static CardColor DIAMOND = CardColor.DIAMOND;
-    private static CardColor CLUB = CardColor.CLUB;
-    private static CardColor HEART = CardColor.HEART;
-    private static CardColor SPADE = CardColor.SPADE;
+    private static final CardType A = CardType.A;
+    private static final CardType TWO = CardType.TWO;
+    private static final CardType THREE = CardType.THREE;
+    private static final CardType FOUR = CardType.FOUR;
+    private static final CardType FIVE = CardType.FIVE;
+    private static final CardType SIX = CardType.SIX;
+    private static final CardType SEVEN = CardType.SEVEN;
+    private static final CardType EIGHT = CardType.EIGHT;
+    private static final CardType NINE = CardType.NINE;
+    private static final CardType TEN = CardType.TEN;
+    private static final CardType J = CardType.J;
+    private static final CardType Q = CardType.Q;
+    private static final CardType K = CardType.K;
+    private static final CardColor DIAMOND = CardColor.DIAMOND;
+    private static final CardColor CLUB = CardColor.CLUB;
+    private static final CardColor HEART = CardColor.HEART;
+    private static final CardColor SPADE = CardColor.SPADE;
 
-    private static List<Hand> handsList = new ArrayList<>();
-    private static List<Hand> outcomeHandsList = new ArrayList<>();
+    private static final List<Hand> handsList = new ArrayList<>();
+    private static final List<Hand> outcomeHandsList = new ArrayList<>();
 
     ////////////////////////////////////////////////////////////////////////////
     //////////////////////////////PREPARING HANDS///////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
 
-    private static Hand royalFlushHand_1 = new Hand(A, DIAMOND, K, DIAMOND, Q, DIAMOND, J, DIAMOND, TEN, DIAMOND);
-    private static Hand royalFlushHand_2 = new Hand(A, CLUB, K, CLUB, Q, CLUB, J, CLUB, TEN, CLUB);
-    private static Hand straightFlushHand_1 = new Hand(SIX, CLUB, FIVE, CLUB, FOUR, CLUB, THREE, CLUB, TWO, CLUB);
-    private static Hand straightFlushHand_2 = new Hand(K, CLUB, Q, CLUB, J, CLUB, TEN, CLUB, NINE, CLUB);
-    private static Hand straightFlushHand_3 = new Hand(K, CLUB, Q, CLUB, J, CLUB, TEN, CLUB, NINE, CLUB);
-    private static Hand straightFlushHand_4 = new Hand(SEVEN, CLUB, SIX, CLUB, FIVE, CLUB, FOUR, CLUB, THREE, CLUB);
-    private static Hand straightFlushHand_5 = new Hand(A, CLUB, TWO, CLUB, FIVE, CLUB, FOUR, CLUB, THREE, CLUB);
-    private static Hand fourOfKindHand_1 = new Hand(FIVE, CLUB, FIVE, DIAMOND, FIVE, HEART, FIVE, SPADE, A, CLUB);
-    private static Hand fourOfKindHand_2 = new Hand(A, CLUB, A, DIAMOND, A, HEART, A, SPADE, J, CLUB);
-    private static Hand fourOfKindHand_3 = new Hand(A, CLUB, A, DIAMOND, A, HEART, A, SPADE, NINE, CLUB);
-    private static Hand fourOfKindHand_4 = new Hand(A, CLUB, A, DIAMOND, A, HEART, A, SPADE, TWO, CLUB);
-    private static Hand fullHouseHand_1 = new Hand(FIVE, CLUB, FIVE, DIAMOND, FIVE, HEART, Q, SPADE, Q, CLUB);
-    private static Hand fullHouseHand_2 = new Hand(A, CLUB, A, DIAMOND, A, HEART, Q, SPADE, Q, CLUB);
-    private static Hand fullHouseHand_3 = new Hand(A, CLUB, A, DIAMOND, A, HEART, K, SPADE, K, CLUB);
-    private static Hand fullHouseHand_4 = new Hand(A, CLUB, A, DIAMOND, TWO, HEART, TWO, SPADE, TWO, CLUB);
-    private static Hand flushHand_1 = new Hand(TWO, CLUB, J, CLUB, FIVE, CLUB, A, CLUB, Q, CLUB);
-    private static Hand flushHand_2 = new Hand(TWO, DIAMOND, J, DIAMOND, FIVE, DIAMOND, A, DIAMOND, Q, DIAMOND);
-    private static Hand flushHand_3 = new Hand(TWO, DIAMOND, J, DIAMOND, FIVE, DIAMOND, A, DIAMOND, Q, DIAMOND);
-    private static Hand flushHand_4 = new Hand(TWO, DIAMOND, J, DIAMOND, FIVE, DIAMOND, K, DIAMOND, Q, DIAMOND);
-    private static Hand flushHand_5 = new Hand(TWO, DIAMOND, J, DIAMOND, FIVE, DIAMOND, K, DIAMOND, TEN, DIAMOND);
-    private static Hand flushHand_6 = new Hand(TWO, DIAMOND, J, DIAMOND, FIVE, DIAMOND, K, DIAMOND, NINE, DIAMOND);
-    private static Hand flushHand_7 = new Hand(TWO, DIAMOND, J, DIAMOND, FOUR, DIAMOND, K, DIAMOND, NINE, DIAMOND);
-    private static Hand straightHand_1 = new Hand(SIX, CLUB, NINE, DIAMOND, SEVEN, CLUB, TEN, SPADE, EIGHT, HEART);
-    private static Hand straightHand_2 = new Hand(J, CLUB, NINE, DIAMOND, SEVEN, CLUB, TEN, SPADE, EIGHT, HEART);
-    private static Hand straightHand_3 = new Hand(A, DIAMOND, TWO, CLUB, FIVE, SPADE, FOUR, CLUB, THREE, HEART);
-    private static Hand straightHand_4 = new Hand(A, DIAMOND, TWO, CLUB, FIVE, SPADE, FOUR, CLUB, THREE, HEART);
-    private static Hand straightHand_5 = new Hand(A, HEART, K, CLUB, Q, CLUB, J, CLUB, TEN, CLUB);
-    private static Hand threeOfKindHand_1 = new Hand(FIVE, CLUB, FIVE, DIAMOND, FIVE, HEART, TWO, SPADE, A, CLUB);
-    private static Hand threeOfKindHand_2 = new Hand(FIVE, CLUB, TWO, DIAMOND, TWO, HEART, TWO, SPADE, A, CLUB);
-    private static Hand threeOfKindHand_3 = new Hand(NINE, CLUB, NINE, DIAMOND, NINE, HEART, TWO, SPADE, A, CLUB);
-    private static Hand threeOfKindHand_4 = new Hand(NINE, CLUB, NINE, DIAMOND, NINE, HEART, THREE, SPADE, A, CLUB);
-    private static Hand threeOfKindHand_5 = new Hand(FIVE, CLUB, TWO, DIAMOND, TWO, HEART, TWO, SPADE, K, CLUB);
-    private static Hand twoPairHand_1 = new Hand(A, CLUB, A, DIAMOND, SIX, HEART, SIX, SPADE, TWO, CLUB);
-    private static Hand twoPairHand_2 = new Hand(K, CLUB, K, DIAMOND, SIX, HEART, SIX, SPADE, A, CLUB);
-    private static Hand twoPairHand_3 = new Hand(SEVEN, CLUB, SEVEN, DIAMOND, FIVE, HEART, FIVE, SPADE, A, CLUB);
-    private static Hand twoPairHand_4 = new Hand(SEVEN, CLUB, SEVEN, DIAMOND, FIVE, HEART, FIVE, SPADE, SIX, CLUB);
-    private static Hand twoPairHand_5 = new Hand(SEVEN, CLUB, SEVEN, DIAMOND, FIVE, HEART, FIVE, SPADE, FOUR, CLUB);
-    private static Hand twoPairHand_6 = new Hand(SEVEN, CLUB, SEVEN, DIAMOND, FIVE, HEART, FIVE, SPADE, TWO, CLUB);
-    private static Hand onePairHand_1 = new Hand(A, CLUB, A, DIAMOND, Q, HEART, TEN, SPADE, NINE, CLUB);
-    private static Hand onePairHand_2 = new Hand(K, CLUB, K, DIAMOND, Q, HEART, TEN, SPADE, NINE, CLUB);
-    private static Hand onePairHand_3 = new Hand(K, CLUB, K, DIAMOND, J, HEART, TEN, SPADE, NINE, CLUB);
-    private static Hand onePairHand_4 = new Hand(K, CLUB, K, DIAMOND, J, HEART, NINE, SPADE, EIGHT, CLUB);
-    private static Hand onePairHand_5 = new Hand(K, CLUB, K, DIAMOND, J, HEART, NINE, SPADE, SEVEN, CLUB);
-    private static Hand highCardHand_1 = new Hand(A, CLUB, Q, DIAMOND, TEN, HEART, EIGHT, SPADE, SIX, CLUB);
-    private static Hand highCardHand_2 = new Hand(K, CLUB, J, DIAMOND, TEN, HEART, EIGHT, SPADE, SIX, CLUB);
-    private static Hand highCardHand_3 = new Hand(K, CLUB, NINE, DIAMOND, SEVEN, HEART, FIVE, SPADE, THREE, CLUB);
-    private static Hand highCardHand_4 = new Hand(K, CLUB, NINE, DIAMOND, SIX, HEART, FIVE, SPADE, THREE, CLUB);
-    private static Hand highCardHand_5 = new Hand(K, CLUB, NINE, DIAMOND, SIX, HEART, FOUR, SPADE, THREE, CLUB);
-    private static Hand highCardHand_6 = new Hand(K, CLUB, NINE, DIAMOND, SIX, HEART, FOUR, SPADE, TWO, CLUB);
+    private static final Hand royalFlushHand_1 = new Hand(A, DIAMOND, K, DIAMOND, Q, DIAMOND, J, DIAMOND, TEN, DIAMOND);
+    private static final Hand royalFlushHand_2 = new Hand(A, CLUB, K, CLUB, Q, CLUB, J, CLUB, TEN, CLUB);
+    private static final Hand straightFlushHand_1 = new Hand(SIX, CLUB, FIVE, CLUB, FOUR, CLUB, THREE, CLUB, TWO, CLUB);
+    private static final Hand straightFlushHand_2 = new Hand(K, CLUB, Q, CLUB, J, CLUB, TEN, CLUB, NINE, CLUB);
+    private static final Hand straightFlushHand_3 = new Hand(K, CLUB, Q, CLUB, J, CLUB, TEN, CLUB, NINE, CLUB);
+    private static final Hand straightFlushHand_4 = new Hand(SEVEN, CLUB, SIX, CLUB, FIVE, CLUB, FOUR, CLUB, THREE, CLUB);
+    private static final Hand straightFlushHand_5 = new Hand(A, CLUB, TWO, CLUB, FIVE, CLUB, FOUR, CLUB, THREE, CLUB);
+    private static final Hand fourOfKindHand_1 = new Hand(FIVE, CLUB, FIVE, DIAMOND, FIVE, HEART, FIVE, SPADE, A, CLUB);
+    private static final Hand fourOfKindHand_2 = new Hand(A, CLUB, A, DIAMOND, A, HEART, A, SPADE, J, CLUB);
+    private static final Hand fourOfKindHand_3 = new Hand(A, CLUB, A, DIAMOND, A, HEART, A, SPADE, NINE, CLUB);
+    private static final Hand fourOfKindHand_4 = new Hand(A, CLUB, A, DIAMOND, A, HEART, A, SPADE, TWO, CLUB);
+    private static final Hand fullHouseHand_1 = new Hand(FIVE, CLUB, FIVE, DIAMOND, FIVE, HEART, Q, SPADE, Q, CLUB);
+    private static final Hand fullHouseHand_2 = new Hand(A, CLUB, A, DIAMOND, A, HEART, Q, SPADE, Q, CLUB);
+    private static final Hand fullHouseHand_3 = new Hand(A, CLUB, A, DIAMOND, A, HEART, K, SPADE, K, CLUB);
+    private static final Hand fullHouseHand_4 = new Hand(A, CLUB, A, DIAMOND, TWO, HEART, TWO, SPADE, TWO, CLUB);
+    private static final Hand flushHand_1 = new Hand(TWO, CLUB, J, CLUB, FIVE, CLUB, A, CLUB, Q, CLUB);
+    private static final Hand flushHand_2 = new Hand(TWO, DIAMOND, J, DIAMOND, FIVE, DIAMOND, A, DIAMOND, Q, DIAMOND);
+    private static final Hand flushHand_3 = new Hand(TWO, DIAMOND, J, DIAMOND, FIVE, DIAMOND, A, DIAMOND, Q, DIAMOND);
+    private static final Hand flushHand_4 = new Hand(TWO, DIAMOND, J, DIAMOND, FIVE, DIAMOND, K, DIAMOND, Q, DIAMOND);
+    private static final Hand flushHand_5 = new Hand(TWO, DIAMOND, J, DIAMOND, FIVE, DIAMOND, K, DIAMOND, TEN, DIAMOND);
+    private static final Hand flushHand_6 = new Hand(TWO, DIAMOND, J, DIAMOND, FIVE, DIAMOND, K, DIAMOND, NINE, DIAMOND);
+    private static final Hand flushHand_7 = new Hand(TWO, DIAMOND, J, DIAMOND, FOUR, DIAMOND, K, DIAMOND, NINE, DIAMOND);
+    private static final Hand straightHand_1 = new Hand(SIX, CLUB, NINE, DIAMOND, SEVEN, CLUB, TEN, SPADE, EIGHT, HEART);
+    private static final Hand straightHand_2 = new Hand(J, CLUB, NINE, DIAMOND, SEVEN, CLUB, TEN, SPADE, EIGHT, HEART);
+    private static final Hand straightHand_3 = new Hand(A, DIAMOND, TWO, CLUB, FIVE, SPADE, FOUR, CLUB, THREE, HEART);
+    private static final Hand straightHand_4 = new Hand(A, DIAMOND, TWO, CLUB, FIVE, SPADE, FOUR, CLUB, THREE, HEART);
+    private static final Hand straightHand_5 = new Hand(A, HEART, K, CLUB, Q, CLUB, J, CLUB, TEN, CLUB);
+    private static final Hand threeOfKindHand_1 = new Hand(FIVE, CLUB, FIVE, DIAMOND, FIVE, HEART, TWO, SPADE, A, CLUB);
+    private static final Hand threeOfKindHand_2 = new Hand(FIVE, CLUB, TWO, DIAMOND, TWO, HEART, TWO, SPADE, A, CLUB);
+    private static final Hand threeOfKindHand_3 = new Hand(NINE, CLUB, NINE, DIAMOND, NINE, HEART, TWO, SPADE, A, CLUB);
+    private static final Hand threeOfKindHand_4 = new Hand(NINE, CLUB, NINE, DIAMOND, NINE, HEART, THREE, SPADE, A, CLUB);
+    private static final Hand threeOfKindHand_5 = new Hand(FIVE, CLUB, TWO, DIAMOND, TWO, HEART, TWO, SPADE, K, CLUB);
+    private static final Hand twoPairHand_1 = new Hand(A, CLUB, A, DIAMOND, SIX, HEART, SIX, SPADE, TWO, CLUB);
+    private static final Hand twoPairHand_2 = new Hand(K, CLUB, K, DIAMOND, SIX, HEART, SIX, SPADE, A, CLUB);
+    private static final Hand twoPairHand_3 = new Hand(SEVEN, CLUB, SEVEN, DIAMOND, FIVE, HEART, FIVE, SPADE, A, CLUB);
+    private static final Hand twoPairHand_4 = new Hand(SEVEN, CLUB, SEVEN, DIAMOND, FIVE, HEART, FIVE, SPADE, SIX, CLUB);
+    private static final Hand twoPairHand_5 = new Hand(SEVEN, CLUB, SEVEN, DIAMOND, FIVE, HEART, FIVE, SPADE, FOUR, CLUB);
+    private static final Hand twoPairHand_6 = new Hand(SEVEN, CLUB, SEVEN, DIAMOND, FIVE, HEART, FIVE, SPADE, TWO, CLUB);
+    private static final Hand onePairHand_1 = new Hand(A, CLUB, A, DIAMOND, Q, HEART, TEN, SPADE, NINE, CLUB);
+    private static final Hand onePairHand_2 = new Hand(K, CLUB, K, DIAMOND, Q, HEART, TEN, SPADE, NINE, CLUB);
+    private static final Hand onePairHand_3 = new Hand(K, CLUB, K, DIAMOND, J, HEART, TEN, SPADE, NINE, CLUB);
+    private static final Hand onePairHand_4 = new Hand(K, CLUB, K, DIAMOND, J, HEART, NINE, SPADE, EIGHT, CLUB);
+    private static final Hand onePairHand_5 = new Hand(K, CLUB, K, DIAMOND, J, HEART, NINE, SPADE, SEVEN, CLUB);
+    private static final Hand highCardHand_1 = new Hand(A, CLUB, Q, DIAMOND, TEN, HEART, EIGHT, SPADE, SIX, CLUB);
+    private static final Hand highCardHand_2 = new Hand(K, CLUB, J, DIAMOND, TEN, HEART, EIGHT, SPADE, SIX, CLUB);
+    private static final Hand highCardHand_3 = new Hand(K, CLUB, NINE, DIAMOND, SEVEN, HEART, FIVE, SPADE, THREE, CLUB);
+    private static final Hand highCardHand_4 = new Hand(K, CLUB, NINE, DIAMOND, SIX, HEART, FIVE, SPADE, THREE, CLUB);
+    private static final Hand highCardHand_5 = new Hand(K, CLUB, NINE, DIAMOND, SIX, HEART, FOUR, SPADE, THREE, CLUB);
+    private static final Hand highCardHand_6 = new Hand(K, CLUB, NINE, DIAMOND, SIX, HEART, FOUR, SPADE, TWO, CLUB);
 
     ////////////////////////////////////////////////////////////////////////////
     //////////////////////////////FINDING WINNERS///////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     //region Any Hand Type
 
-    private static Hand hand1 = new Hand(TEN, CLUB, J, CLUB, K, CLUB, Q, HEART, SIX, CLUB);
-    private static Hand hand2 = new Hand(TEN, CLUB, J, CLUB, K, CLUB, SEVEN, SPADE, TEN, DIAMOND);
+    private static final Hand hand1 = new Hand(TEN, CLUB, J, CLUB, K, CLUB, Q, HEART, SIX, CLUB);
+    private static final Hand hand2 = new Hand(TEN, CLUB, J, CLUB, K, CLUB, SEVEN, SPADE, TEN, DIAMOND);
+
     @Test
     public void findWinnersFrom_AnyHands_Test() {
         handsList.clear();
@@ -241,69 +242,6 @@ public class HandsComparatorTest {
         outcomeHandsList.add(fourOfKindHand_3);
 
         assertNotEquals(HandsComparator.findWinnersFrom_FourOfKinds(handsList), outcomeHandsList);
-    }
-
-    @Test
-    public void findDefinedCardWithinFourOfKinds_Test() {
-        assertEquals(HandsComparator.findDefinedCardWithinFourOfKinds(fourOfKindHand_1, true).getCardType(), CardType.A);
-        assertEquals(HandsComparator.findDefinedCardWithinFourOfKinds(fourOfKindHand_1, false).getCardType(), CardType.FIVE);
-        assertEquals(HandsComparator.findDefinedCardWithinFourOfKinds(fourOfKindHand_3, true).getCardType(), CardType.NINE);
-        assertEquals(HandsComparator.findDefinedCardWithinFourOfKinds(fourOfKindHand_3, false).getCardType(), CardType.A);
-    }
-
-    @Test
-    public void findDefinedCardMaxValueWithinFourOfKinds_Unique_Test() {
-        handsList.clear();
-        handsList.add(fourOfKindHand_2);
-        handsList.add(fourOfKindHand_3);
-        handsList.add(fourOfKindHand_4);
-
-        Short value = (short) 11;
-        assertEquals(HandsComparator.findDefinedCardMaxValueWithinFourOfKinds(handsList, true), value);
-    }
-
-    @Test
-    public void findDefinedCardMaxValueWithinFourOfKinds_Common_Test() {
-        handsList.clear();
-        handsList.add(fourOfKindHand_1);
-        handsList.add(fourOfKindHand_2);
-        handsList.add(fourOfKindHand_3);
-        handsList.add(fourOfKindHand_4);
-
-        Short value = (short) 14;
-        assertEquals(HandsComparator.findDefinedCardMaxValueWithinFourOfKinds(handsList, false), value);
-    }
-
-    @Test
-    public void filterHandsListForDefinedMaxValueCards_Common_Test() {
-        handsList.clear();
-        handsList.add(fourOfKindHand_1);
-        handsList.add(fourOfKindHand_2);
-        handsList.add(fourOfKindHand_3);
-        handsList.add(fourOfKindHand_4);
-
-        outcomeHandsList.clear();
-        outcomeHandsList.add(fourOfKindHand_2);
-        outcomeHandsList.add(fourOfKindHand_3);
-        outcomeHandsList.add(fourOfKindHand_4);
-
-        Short maxValueOfCommonCards = HandsComparator.findDefinedCardMaxValueWithinFourOfKinds(handsList, false);
-        assertEquals(HandsComparator.filterHandsListForDefinedMaxValueCards(handsList, maxValueOfCommonCards, false), outcomeHandsList);
-    }
-
-    @Test
-    public void filterHandsListForDefinedMaxValueCards_Unique_Test() {
-        handsList.clear();
-        handsList.add(fourOfKindHand_1);
-        handsList.add(fourOfKindHand_2);
-        handsList.add(fourOfKindHand_3);
-        handsList.add(fourOfKindHand_4);
-
-        outcomeHandsList.clear();
-        outcomeHandsList.add(fourOfKindHand_1);
-
-        Short maxValueOfCommonCards = HandsComparator.findDefinedCardMaxValueWithinFourOfKinds(handsList, true);
-        assertEquals(HandsComparator.filterHandsListForDefinedMaxValueCards(handsList, maxValueOfCommonCards, true), outcomeHandsList);
     }
     //endregion
 
@@ -490,7 +428,6 @@ public class HandsComparatorTest {
         outcomeHandsList.add(threeOfKindHand_4);
         outcomeHandsList.add(threeOfKindHand_4);
 
-        System.out.println("won");
         assertEquals(HandsComparator.findWinnersFrom_ThreeOfKinds(handsList), outcomeHandsList);
     }
 

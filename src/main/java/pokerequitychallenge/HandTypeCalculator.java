@@ -2,17 +2,16 @@ package pokerequitychallenge;
 
 import lombok.Getter;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
+
 @Getter
 public class HandTypeCalculator {
     private static List<Card> handCards;
-    private static List<Card> sortedHandCards;
-    private static Map<CardType, Integer> cardTypesCountersMap;
+    private static Map<CardType, Long> cardTypesCountersMap;
     private static boolean isRoyalFlush;
     private static boolean isFlush;
     private static boolean isStraight;
@@ -23,8 +22,7 @@ public class HandTypeCalculator {
 
     static HandType calculateHandType(List<Card> cards) {
         resetClassVariables();
-        handCards = cards;
-        sortedHandCards = handCards.stream().sorted().collect(Collectors.toList());
+        handCards = cards.stream().sorted().collect(Collectors.toList());
 
         isFlush = isFlush();
         isStraight = isStraight();
@@ -33,7 +31,7 @@ public class HandTypeCalculator {
 
         if (isStraight && isFlush) return HandType.STRAIGHT_FLUSH;
 
-        checkForCardTypesMultiplications();
+        cardTypesCountersMap = handCards.stream().collect(groupingBy(Card::getCardType, Collectors.counting()));
 
         isFourOfKind = isFourOfKind();
         if (isFourOfKind) return HandType.FOUR_OF_A_KIND;
@@ -68,71 +66,53 @@ public class HandTypeCalculator {
         numberOfPairs = null;
     }
 
-    private static void checkForCardTypesMultiplications() {
-        cardTypesCountersMap = new HashMap<>();
-        CardType[] cardTypes = CardType.class.getEnumConstants();
-
-        Integer currentCount;
-        for (CardType cardType : cardTypes) {
-            cardTypesCountersMap.put(cardType, 0);
-        }
-        for (Card card : handCards) {
-            currentCount = cardTypesCountersMap.get(card.getCardType());
-            currentCount++;
-            cardTypesCountersMap.put(card.getCardType(), currentCount);
-        }
-    }
-
     private static boolean isFullHouse() {
-        return cardTypesCountersMap.containsValue(3) && cardTypesCountersMap.containsValue(2);
+        return cardTypesCountersMap.containsValue(3L) && cardTypesCountersMap.containsValue(2L);
     }
 
     private static boolean isFourOfKind() {
-        return cardTypesCountersMap.containsValue(4);
+        return cardTypesCountersMap.containsValue(4L);
     }
 
     private static boolean isThreeOfKind() {
-        return cardTypesCountersMap.containsValue(3);
+        return cardTypesCountersMap.containsValue(3L);
     }
 
     private static Integer calculateNumberOfPairs() {
-        Integer pairsCounter = 0;
-        Collection<Integer> mapValues = cardTypesCountersMap.values();
-        for (Integer value : mapValues) {
-            if (value == 2) pairsCounter++;
-        }
-        return pairsCounter;
+        return (int) cardTypesCountersMap.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue() == 2L)
+                .count();
     }
 
     private static boolean isRoyalFlush() {
-        return isFlush && isStraight
-                && sortedHandCards.get(0).getCardType().equals(CardType.A)
-                && sortedHandCards.get(1).getCardType().equals(CardType.K);
+        return isFlush
+                && isStraight
+                && handCards.get(0).getCardType().equals(CardType.A)
+                && handCards.get(1).getCardType().equals(CardType.K);
     }
 
     private static boolean isFlush() {
-        CardColor cardColor = sortedHandCards.get(0).getCardColor();
-        for (int i = 1; i < sortedHandCards.size(); i++) {
-            if (!sortedHandCards.get(i).getCardColor().equals(cardColor)) {
-                return false;
-            }
-        }
-        return true;
+        return 1 == handCards
+                .stream()
+                .map(Card::getCardColor)
+                .collect(Collectors.toSet())
+                .size();
     }
 
     private static boolean isStraight() {
         //is it Straight from Ace
-        if (sortedHandCards.get(0).getCardType().equals(CardType.A)
-                && sortedHandCards.get(1).getCardType().equals(CardType.FIVE)
-                && sortedHandCards.get(2).getCardType().equals(CardType.FOUR)
-                && sortedHandCards.get(3).getCardType().equals(CardType.THREE)
-                && sortedHandCards.get(4).getCardType().equals(CardType.TWO)) {
+        if (handCards.get(0).getCardType().equals(CardType.A)
+                && handCards.get(1).getCardType().equals(CardType.FIVE)
+                && handCards.get(2).getCardType().equals(CardType.FOUR)
+                && handCards.get(3).getCardType().equals(CardType.THREE)
+                && handCards.get(4).getCardType().equals(CardType.TWO)) {
             return true;
         }
         //is it any other Straight
-        short maxCardValue = sortedHandCards.get(0).getValue();
+        int maxCardValue = handCards.get(0).getValue();
         for (int i = 1; i < handCards.size(); i++) {
-            if (sortedHandCards.get(i).getValue() != (maxCardValue - i)) return false;
+            if (handCards.get(i).getValue() != (maxCardValue - i)) return false;
         }
         return true;
     }
