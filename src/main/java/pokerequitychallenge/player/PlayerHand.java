@@ -1,7 +1,8 @@
-package pokerequitychallenge;
+package pokerequitychallenge.player;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import pokerequitychallenge.card.Card;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

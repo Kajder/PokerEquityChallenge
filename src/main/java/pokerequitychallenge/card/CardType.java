@@ -1,4 +1,4 @@
-package pokerequitychallenge;
+package pokerequitychallenge.card;
 
 public enum CardType {
 

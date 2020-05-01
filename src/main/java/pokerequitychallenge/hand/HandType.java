@@ -1,4 +1,4 @@
-package pokerequitychallenge;
+package pokerequitychallenge.hand;
 
 /**
  * Represents possible types of hand that Player may have.

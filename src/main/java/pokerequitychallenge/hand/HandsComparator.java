@@ -1,6 +1,8 @@
-package pokerequitychallenge;
+package pokerequitychallenge.hand;
 
 import pokerequitychallenge.Exception.HandNotFound;
+import pokerequitychallenge.card.Card;
+import pokerequitychallenge.card.CardType;
 
 import java.util.Comparator;
 import java.util.List;

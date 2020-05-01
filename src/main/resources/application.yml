@@ -1,2 +1,7 @@
 server:
   port: 8080
+
+calculation:
+  probability:
+    threshold: 3
+    games-number: 10000

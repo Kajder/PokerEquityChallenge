@@ -1,6 +1,9 @@
-package pokerequitychallenge;
+package pokerequitychallenge.player;
 
 import lombok.Getter;
+import pokerequitychallenge.card.Card;
+import pokerequitychallenge.hand.Hand;
+import pokerequitychallenge.hand.HandsComparator;
 
 import javax.validation.constraints.Size;
 import java.util.LinkedList;

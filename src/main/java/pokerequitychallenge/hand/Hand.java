@@ -1,6 +1,9 @@
-package pokerequitychallenge;
+package pokerequitychallenge.hand;
 
 import lombok.Getter;
+import pokerequitychallenge.card.Card;
+import pokerequitychallenge.card.CardColor;
+import pokerequitychallenge.card.CardType;
 
 import java.util.ArrayList;
 import java.util.List;

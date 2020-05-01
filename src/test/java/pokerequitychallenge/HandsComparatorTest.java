@@ -1,6 +1,11 @@
 package pokerequitychallenge;
 
 import org.junit.Test;
+import pokerequitychallenge.card.CardColor;
+import pokerequitychallenge.card.CardType;
+import pokerequitychallenge.hand.Hand;
+import pokerequitychallenge.hand.HandType;
+import pokerequitychallenge.hand.HandsComparator;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package pokerequitychallenge;
+package pokerequitychallenge.card;
 
 import lombok.Getter;
 import pokerequitychallenge.Exception.NotEnoughCardsInDeck;
@@ -18,7 +18,7 @@ public class CardDrawer {
         this.currentDeck = new LinkedList<>(CardDeck.deck);
     }
 
-    public void rebuildDeckExcluding(List<Card> cardsToExclude) {
+    public void buildDeckExcluding(List<Card> cardsToExclude) {
         List<Card> deck = new LinkedList<>(CardDeck.deck);
         deck.removeAll(cardsToExclude);
         this.currentDeck = deck;

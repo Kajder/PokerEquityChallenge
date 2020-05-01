@@ -1,7 +1,12 @@
 package pokerequitychallenge;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import pokerequitychallenge.card.Card;
+import pokerequitychallenge.card.CardDrawer;
+import pokerequitychallenge.hand.Hand;
+import pokerequitychallenge.hand.HandsComparator;
+import pokerequitychallenge.player.Player;
+import pokerequitychallenge.player.PlayerHand;
+import pokerequitychallenge.request.EquityRequest;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,14 +38,14 @@ public class Game {
         CardDrawer cardDrawer = new CardDrawer();
 
         for (int i = 0; i < gamesNumber; i++) {
-            TableEntity table = new TableEntity(request);
-            cardDrawer.rebuildDeckExcluding(requestCardsList);
+            Table table = new Table(request);
+            cardDrawer.buildDeckExcluding(requestCardsList);
 
             drawAndDealMissingCards(table, cardDrawer);
 
             List<Hand> winningHands = HandsComparator.getWinningHands(
                     table.playerHands.stream()
-                            .map(playerHand -> new Player(playerHand.playerId, playerHand.playerCards))
+                            .map(playerHand -> new Player(playerHand.getPlayerId(), playerHand.getPlayerCards()))
                             .peek(player -> player.calculateHighestHand(table.board))
                             .map(Player::getHighestHand)
                             .collect(Collectors.toList())
@@ -63,7 +68,7 @@ public class Game {
         return Stream.concat(
                 request.getBoard().stream(),
                 request.getPlayerHands().stream()
-                        .map(playerHand -> playerHand.playerCards)
+                        .map(PlayerHand::getPlayerCards)
                         .flatMap(Collection::stream))
                 .collect(Collectors.toList());
     }
@@ -101,11 +106,11 @@ public class Game {
 //        );
     }
 
-    private void drawAndDealMissingCards(TableEntity table, CardDrawer cardDrawer) {
+    private void drawAndDealMissingCards(Table table, CardDrawer cardDrawer) {
         table.board.addAll(cardDrawer.drawCards((5 - table.board.size())));
         table.playerHands.forEach(p -> {
-            if (p.playerCards.size() < 2)
-                p.playerCards.addAll(cardDrawer.drawCards(2 - p.playerCards.size()));
+            if (p.getPlayerCards().size() < 2)
+                p.getPlayerCards().addAll(cardDrawer.drawCards(2 - p.getPlayerCards().size()));
         });
     }
 }
