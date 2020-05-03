@@ -3,12 +3,9 @@ package pokerequitychallenge.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import pokerequitychallenge.*;
+import pokerequitychallenge.Table;
 import pokerequitychallenge.card.Card;
 import pokerequitychallenge.card.CardDrawer;
-import pokerequitychallenge.hand.Hand;
-import pokerequitychallenge.hand.HandsComparator;
-import pokerequitychallenge.player.Player;
 import pokerequitychallenge.player.PlayerHand;
 import pokerequitychallenge.request.EquityRequest;
 import pokerequitychallenge.utils.EquityCalculator;
@@ -22,7 +19,7 @@ import java.util.stream.Collectors;
 public class ProbabilisticCalculationEquityService {
 
     @Value("${calculation.probability.games-number: 10000}")
-    private final int gamesNumber = 10000;
+    private int gamesNumber;
 
     public Map<Integer, Float> runProbabilisticCalculation(EquityRequest equityRequest,
                                                            List<Card> requestCardsList) {
@@ -49,10 +46,13 @@ public class ProbabilisticCalculationEquityService {
     }
 
     private void drawAndDealMissingCards(Table table, CardDrawer cardDrawer) {
-        table.getBoard().addAll(cardDrawer.drawCards((5 - table.getBoard().size())));
+        table.getBoard().addAll(
+                cardDrawer.drawCards(AllVariantsCalculationEquityService.BOARD_CARDS_NUMBER - table.getBoard().size()));
+
         table.getPlayerHands().forEach(p -> {
-            if (p.getPlayerCards().size() < 2)
-                p.getPlayerCards().addAll(cardDrawer.drawCards(2 - p.getPlayerCards().size()));
+            if (p.getPlayerCards().size() < AllVariantsCalculationEquityService.PLAYER_CARDS_NUMBER)
+                p.getPlayerCards().addAll(
+                        cardDrawer.drawCards(AllVariantsCalculationEquityService.PLAYER_CARDS_NUMBER - p.getPlayerCards().size()));
         });
     }
 

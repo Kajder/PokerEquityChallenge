@@ -1,10 +1,10 @@
 package pokerequitychallenge.utils;
 
 import lombok.extern.slf4j.Slf4j;
+import pokerequitychallenge.Table;
 import pokerequitychallenge.hand.Hand;
 import pokerequitychallenge.hand.HandsComparator;
 import pokerequitychallenge.player.Player;
-import pokerequitychallenge.Table;
 
 import java.util.List;
 import java.util.Map;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EquityCalculator {
 
-    public static void findWinnersAndWriteScores(Table table, Map<Integer, Float> scores){
+    public static void findWinnersAndWriteScores(Table table, Map<Integer, Float> scores) {
 
         List<Hand> winningHands = HandsComparator.getWinningHands(
                 table.getPlayerHands().stream()
@@ -28,7 +28,7 @@ public class EquityCalculator {
 
     }
 
-    public static Map<Integer, Float> convertScoresNumbersToPercentages(Map<Integer, Float> scores, int numberOfGames){
+    public static Map<Integer, Float> convertScoresNumbersToPercentages(Map<Integer, Float> scores, int numberOfGames) {
         scores.forEach((k, v) -> scores.put(k, (scores.get(k) / numberOfGames)));
         return scores;
     }

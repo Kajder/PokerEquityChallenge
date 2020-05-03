@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import pokerequitychallenge.card.Card;
-import pokerequitychallenge.request.EquityRequest;
 import pokerequitychallenge.player.PlayerHand;
+import pokerequitychallenge.request.EquityRequest;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,7 +27,8 @@ public class CalculationDispatcherEquityService {
         List<Card> requestCardsList = findAllCardsFromRequest(equityRequest);
 
         int undefinedCardsNumber = AllVariantsCalculationEquityService.BOARD_CARDS_NUMBER
-                + (AllVariantsCalculationEquityService.PLAYER_CARDS_NUMBER * equityRequest.getPlayerHands().size()) - requestCardsList.size();
+                + (AllVariantsCalculationEquityService.PLAYER_CARDS_NUMBER * equityRequest.getPlayerHands().size())
+                - requestCardsList.size();
 
         return undefinedCardsNumber > PROBABILITY_CALCULATION_THRESHOLD
                 ? probabilisticCalculationEquityService.runProbabilisticCalculation(equityRequest, requestCardsList)
@@ -42,5 +43,4 @@ public class CalculationDispatcherEquityService {
                         .flatMap(Collection::stream))
                 .collect(Collectors.toList());
     }
-
 }
